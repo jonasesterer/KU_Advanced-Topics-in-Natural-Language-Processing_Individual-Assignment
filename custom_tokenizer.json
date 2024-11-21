@@ -1,0 +1,471 @@
+{
+  "version": "1.0",
+  "truncation": null,
+  "padding": null,
+  "added_tokens": [
+    {
+      "id": 0,
+      "content": "<EOS>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 1,
+      "content": "<SOS>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    }
+  ],
+  "normalizer": null,
+  "pre_tokenizer": {
+    "type": "Whitespace"
+  },
+  "post_processor": null,
+  "decoder": null,
+  "model": {
+    "type": "BPE",
+    "dropout": null,
+    "unk_token": null,
+    "continuing_subword_prefix": null,
+    "end_of_word_suffix": null,
+    "fuse_unk": false,
+    "byte_fallback": false,
+    "ignore_merges": false,
+    "vocab": {
+      "<EOS>": 0,
+      "<SOS>": 1,
+      ":": 2,
+      "A": 3,
+      "E": 4,
+      "F": 5,
+      "G": 6,
+      "H": 7,
+      "I": 8,
+      "J": 9,
+      "K": 10,
+      "L": 11,
+      "M": 12,
+      "N": 13,
+      "O": 14,
+      "P": 15,
+      "R": 16,
+      "T": 17,
+      "U": 18,
+      "W": 19,
+      "_": 20,
+      "a": 21,
+      "c": 22,
+      "d": 23,
+      "e": 24,
+      "f": 25,
+      "g": 26,
+      "h": 27,
+      "i": 28,
+      "j": 29,
+      "k": 30,
+      "l": 31,
+      "m": 32,
+      "n": 33,
+      "o": 34,
+      "p": 35,
+      "r": 36,
+      "s": 37,
+      "t": 38,
+      "u": 39,
+      "w": 40,
+      "I_": 41,
+      "N_": 42,
+      "RN_": 43,
+      "TU": 44,
+      "I_TU": 45,
+      "I_TURN_": 46,
+      "EF": 47,
+      "GH": 48,
+      "IGH": 49,
+      "LEF": 50,
+      "RIGH": 51,
+      "I_TURN_LEF": 52,
+      "I_TURN_RIGH": 53,
+      "I_TURN_LEFT": 54,
+      "I_TURN_RIGHT": 55,
+      "ri": 56,
+      "AL": 57,
+      "JU": 58,
+      "LO": 59,
+      "MP": 60,
+      "OK": 61,
+      "RU": 62,
+      "WAL": 63,
+      "I_JU": 64,
+      "I_LO": 65,
+      "I_RU": 66,
+      "I_WAL": 67,
+      "I_JUMP": 68,
+      "I_LOOK": 69,
+      "I_RUN": 70,
+      "I_WALK": 71,
+      "ft": 72,
+      "ce": 73,
+      "nd": 74,
+      "IN": 75,
+      "OU": 76,
+      "OUT": 77,
+      "eft": 78,
+      "gh": 79,
+      "left": 80,
+      "righ": 81,
+      "right": 82,
+      "hri": 83,
+      "ice": 84,
+      "tw": 85,
+      "thri": 86,
+      "twice": 87,
+      "thrice": 88,
+      "ar": 89,
+      "it": 90,
+      "op": 91,
+      "os": 92,
+      "ou": 93,
+      "pos": 94,
+      "arou": 95,
+      "ite": 96,
+      "oppos": 97,
+      "around": 98,
+      "opposite": 99,
+      "aft": 100,
+      "and": 101,
+      "er": 102,
+      "after": 103,
+      "al": 104,
+      "ju": 105,
+      "lo": 106,
+      "mp": 107,
+      "ok": 108,
+      "ru": 109,
+      "wal": 110,
+      "jump": 111,
+      "look": 112,
+      "run": 113,
+      "walk": 114,
+      "rn": 115,
+      "tu": 116,
+      "turn": 117
+    },
+    "merges": [
+      [
+        "I",
+        "_"
+      ],
+      [
+        "N",
+        "_"
+      ],
+      [
+        "R",
+        "N_"
+      ],
+      [
+        "T",
+        "U"
+      ],
+      [
+        "I_",
+        "TU"
+      ],
+      [
+        "I_TU",
+        "RN_"
+      ],
+      [
+        "E",
+        "F"
+      ],
+      [
+        "G",
+        "H"
+      ],
+      [
+        "I",
+        "GH"
+      ],
+      [
+        "L",
+        "EF"
+      ],
+      [
+        "R",
+        "IGH"
+      ],
+      [
+        "I_TURN_",
+        "LEF"
+      ],
+      [
+        "I_TURN_",
+        "RIGH"
+      ],
+      [
+        "I_TURN_LEF",
+        "T"
+      ],
+      [
+        "I_TURN_RIGH",
+        "T"
+      ],
+      [
+        "r",
+        "i"
+      ],
+      [
+        "A",
+        "L"
+      ],
+      [
+        "J",
+        "U"
+      ],
+      [
+        "L",
+        "O"
+      ],
+      [
+        "M",
+        "P"
+      ],
+      [
+        "O",
+        "K"
+      ],
+      [
+        "R",
+        "U"
+      ],
+      [
+        "W",
+        "AL"
+      ],
+      [
+        "I_",
+        "JU"
+      ],
+      [
+        "I_",
+        "LO"
+      ],
+      [
+        "I_",
+        "RU"
+      ],
+      [
+        "I_",
+        "WAL"
+      ],
+      [
+        "I_JU",
+        "MP"
+      ],
+      [
+        "I_LO",
+        "OK"
+      ],
+      [
+        "I_RU",
+        "N"
+      ],
+      [
+        "I_WAL",
+        "K"
+      ],
+      [
+        "f",
+        "t"
+      ],
+      [
+        "c",
+        "e"
+      ],
+      [
+        "n",
+        "d"
+      ],
+      [
+        "I",
+        "N"
+      ],
+      [
+        "O",
+        "U"
+      ],
+      [
+        "OU",
+        "T"
+      ],
+      [
+        "e",
+        "ft"
+      ],
+      [
+        "g",
+        "h"
+      ],
+      [
+        "l",
+        "eft"
+      ],
+      [
+        "ri",
+        "gh"
+      ],
+      [
+        "righ",
+        "t"
+      ],
+      [
+        "h",
+        "ri"
+      ],
+      [
+        "i",
+        "ce"
+      ],
+      [
+        "t",
+        "w"
+      ],
+      [
+        "t",
+        "hri"
+      ],
+      [
+        "tw",
+        "ice"
+      ],
+      [
+        "thri",
+        "ce"
+      ],
+      [
+        "a",
+        "r"
+      ],
+      [
+        "i",
+        "t"
+      ],
+      [
+        "o",
+        "p"
+      ],
+      [
+        "o",
+        "s"
+      ],
+      [
+        "o",
+        "u"
+      ],
+      [
+        "p",
+        "os"
+      ],
+      [
+        "ar",
+        "ou"
+      ],
+      [
+        "it",
+        "e"
+      ],
+      [
+        "op",
+        "pos"
+      ],
+      [
+        "arou",
+        "nd"
+      ],
+      [
+        "oppos",
+        "ite"
+      ],
+      [
+        "a",
+        "ft"
+      ],
+      [
+        "a",
+        "nd"
+      ],
+      [
+        "e",
+        "r"
+      ],
+      [
+        "aft",
+        "er"
+      ],
+      [
+        "a",
+        "l"
+      ],
+      [
+        "j",
+        "u"
+      ],
+      [
+        "l",
+        "o"
+      ],
+      [
+        "m",
+        "p"
+      ],
+      [
+        "o",
+        "k"
+      ],
+      [
+        "r",
+        "u"
+      ],
+      [
+        "w",
+        "al"
+      ],
+      [
+        "ju",
+        "mp"
+      ],
+      [
+        "lo",
+        "ok"
+      ],
+      [
+        "ru",
+        "n"
+      ],
+      [
+        "wal",
+        "k"
+      ],
+      [
+        "r",
+        "n"
+      ],
+      [
+        "t",
+        "u"
+      ],
+      [
+        "tu",
+        "rn"
+      ]
+    ]
+  }
+}
