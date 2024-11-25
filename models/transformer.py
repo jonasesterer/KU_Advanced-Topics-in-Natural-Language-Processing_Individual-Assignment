@@ -1,3 +1,4 @@
+# %%
 import os
 import sys
 import math
@@ -54,6 +55,7 @@ class MultiHeadAttention(nn.Module):
         # row wise softmax because we want to weight each value embedding -> dim = -1
         #                               transpose -> B x num_heads x head_dim x S         
         energy = torch.softmax( self.apply_energy_mask(query @ key.transpose(-2, -1) / self.factor, mask=mask) , dim = -1) # B x num_heads x S x S
+
         
         
         attention = energy @ value # B x num_heads x S x head_dim
@@ -75,7 +77,7 @@ class MultiHeadAttention(nn.Module):
         """
         if mask is not None:
             #mask = mask.view(mask.size(0), 1, 1, mask.size(1)) we just receive it in this size
-            tensor = tensor.masked_fill(mask, -torch.inf)
+            tensor = tensor.masked_fill(~mask, -torch.inf)
 
         return tensor
 
@@ -394,3 +396,5 @@ if __name__ == "__main__":
         out = model(src_in, tgt_in)
     
     assert out.shape == expected_out_shape, f"wrong output shape, expected: {expected_out_shape}"
+
+# %%
