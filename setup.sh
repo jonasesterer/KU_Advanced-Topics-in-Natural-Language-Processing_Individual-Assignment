@@ -1,4 +1,4 @@
-pip install pre-commit
+pip install pre-commit ruff
 pre-commit install
 
 echo "Setup precommit"
