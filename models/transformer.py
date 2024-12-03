@@ -3,6 +3,8 @@ import math
 
 import torch
 import torch.nn as nn
+from torch import Tensor
+from typing import Union
 
 
 class MultiHeadAttention(nn.Module):
@@ -152,11 +154,14 @@ class Encoder(nn.Module):
         forward_dim,
         dropout,
         max_len,
+        padding_idx=0,
     ):
         super().__init__()
         # Get embeddings
 
-        self.token_embeddings = nn.Embedding(vocab_size, emb_dim)
+        self.token_embeddings = nn.Embedding(
+            vocab_size, emb_dim, padding_idx=padding_idx
+        )
 
         # max_len + 3, because we have padding tokens, sos, and eos tokens.
         self.sinusoid_table = nn.Embedding.from_pretrained(
@@ -266,11 +271,21 @@ class DecoderBlock(nn.Module):
 
 class Decoder(nn.Module):
     def __init__(
-        self, vocab_size, emb_dim, num_layers, num_heads, forward_dim, dropout, max_len
+        self,
+        vocab_size,
+        emb_dim,
+        num_layers,
+        num_heads,
+        forward_dim,
+        dropout,
+        max_len,
+        padding_idx=0,
     ):
         super().__init__()
 
-        self.token_embeddings = nn.Embedding(vocab_size, emb_dim)
+        self.token_embeddings = nn.Embedding(
+            vocab_size, emb_dim, padding_idx=padding_idx
+        )
 
         # TODO: Remove sos?
         # max_len + 3, because we have sos, and eos tokens.
@@ -356,6 +371,7 @@ class Transformer(nn.Module):
             forward_dim=forward_dim,
             dropout=dropout,
             max_len=max_len,
+            padding_idx=src_pad_idx,
         )
 
         self.decoder = Decoder(
@@ -366,6 +382,7 @@ class Transformer(nn.Module):
             forward_dim=forward_dim,
             dropout=dropout,
             max_len=max_len,
+            padding_idx=tgt_pad_idx,
         )
 
         self.src_pad_idx = src_pad_idx
@@ -405,6 +422,65 @@ class Transformer(nn.Module):
         return decoder_out
 
 
+def greedy_decode(
+    model: Transformer,
+    src: Tensor,
+    max_len: int,
+    start_symbol: int,
+    eos_symbol: int,
+    device: Union[torch.device, str],
+) -> Tensor:
+    """
+    Greedy decoding for a Transformer model.
+
+    Args:
+        model: The Transformer model.
+        src: Tensor of shape (batch_size, src_seq_len) containing source sequences.
+        max_len: Maximum length of the target sequence.
+        start_symbol: The ID of the start token.
+        eos_symbol: The ID of the end-of-sequence (EOS) token.
+        device: Device to run the decoding (CPU or GPU).
+
+    Returns:
+        Tensor of shape (batch_size, generated_seq_len) with the generated sequences.
+    """
+    model.eval()  # Set the model to evaluation mode
+    src = src.to(device)
+
+    # Create the source mask
+    src_mask = model.create_src_mask(src)
+
+    # Pass the source through the encoder
+    encoder_out = model.encoder.forward(src, src_mask)
+
+    # Prepare target sequence starting with the start symbol
+    batch_size = src.size(0)
+    tgt = torch.full((batch_size, 1), start_symbol, dtype=torch.long, device=device)
+
+    for _ in range(max_len - 1):
+        # Create the target mask
+        tgt_mask = model.create_src_mask(tgt)
+
+        # Pass through the decoder
+        logits = model.decoder.forward(tgt, encoder_out, src_mask, tgt_mask)
+        assert (torch.isnan(logits).sum() == 0) and (torch.isinf(logits).sum() == 0)
+
+        # Take the last token's logits
+        next_token_logits = logits[:, -1, :]  # Shape: (batch_size, tgt_vocab_size)
+        next_token_logits = torch.nn.functional.softmax(next_token_logits, dim=-1)
+        # Get the most likely next token
+        next_token = torch.argmax(next_token_logits, dim=-1)  # Shape: (batch_size,)
+
+        # Append the next token to the target sequence
+        tgt = torch.cat([tgt, next_token.unsqueeze(1)], dim=1)
+
+        # Check for EOS token in all sequences and stop decoding for finished sequences
+        if (next_token == eos_symbol).all():
+            break
+
+    return tgt
+
+
 if __name__ == "__main__":
     # general test case
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -432,4 +508,5 @@ if __name__ == "__main__":
         out.shape == expected_out_shape
     ), f"wrong output shape, expected: {expected_out_shape}"
 
+    print(greedy_decode(model, src_in, 10, 2, 5, device))
 # %%
