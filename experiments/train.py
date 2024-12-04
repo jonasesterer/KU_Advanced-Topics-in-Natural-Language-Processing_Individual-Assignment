@@ -106,9 +106,14 @@ def train(
                 list(map(lambda x: x.ids, tokenizer.encode_batch(tgt)))
             ).to(device)
 
-            outputs = model(src=src, tgt=tgt)
+            outputs = model.train_forward(
+                src=src, tgt=tgt, sos_token=tokenizer.token_to_id("[SOS]")
+            )
+            # outputs = model(src=src, tgt=tgt)
 
-            loss = loss_fn(outputs.view(-1, outputs.size(-1)), tgt.view(-1))
+            loss = loss_fn(
+                outputs.view(-1, outputs.size(-1)), tgt[:, 1:].contiguous().view(-1)
+            )
             loss.backward()
 
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=grad_clip)
@@ -121,7 +126,7 @@ def train(
                 num_steps = False
                 break
 
-        if _epochs % 3 == 0:
+        if _epochs % 5 == 0 or not num_steps:
             with torch.inference_mode():
                 item = next(iter(dataloader_test))
                 src = item["src"]
@@ -144,7 +149,7 @@ def train(
                     device,
                 )
                 print(
-                    f"Model prediction: {tokenizer.decode_batch(prediction.cpu().tolist())[0]}\n"
+                    f"Model prediction: {tokenizer.decode_batch(prediction.cpu().tolist(), skip_special_tokens=False)[0]}\n"
                 )
                 print(f"GT: {tokenizer.decode_batch(tgt.cpu().tolist())[0]}\n")
         _epochs += 1

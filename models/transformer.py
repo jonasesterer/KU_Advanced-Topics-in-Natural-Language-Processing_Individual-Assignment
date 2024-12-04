@@ -421,6 +421,21 @@ class Transformer(nn.Module):
 
         return decoder_out
 
+    def train_forward(self, src, tgt, sos_token):
+        src_mask = self.create_src_mask(src)
+        encoder_out = self.encoder.forward(src, src_mask)
+
+        predicted_logits = []
+
+        for i in range(1, tgt.size(1)):
+            tgt_mask = self.create_src_mask(tgt[:, :i])
+            decoder_out = self.decoder.forward(
+                tgt[:, :i], encoder_out, src_mask, tgt_mask
+            )
+            predicted_logits.append(decoder_out[:, -1, :])
+
+        return torch.stack(predicted_logits, dim=1)
+
 
 def greedy_decode(
     model: Transformer,
@@ -503,10 +518,10 @@ if __name__ == "__main__":
 
     with torch.no_grad():
         out = model(src_in, tgt_in)
-
     assert (
         out.shape == expected_out_shape
     ), f"wrong output shape, expected: {expected_out_shape}"
-
+    print(model.train_forward(src_in, tgt_in, 1).shape)
+    print(tgt_in.shape)
     print(greedy_decode(model, src_in, 10, 2, 5, device))
 # %%
