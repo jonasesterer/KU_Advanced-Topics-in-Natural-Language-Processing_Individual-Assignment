@@ -89,8 +89,9 @@ def train(
     # TODO add logging
     loss_fn = torch.nn.CrossEntropyLoss(ignore_index=model.tgt_pad_idx)
 
-    _epochs = 0
-    while num_steps:
+    # _epochs = 0
+    # while num_steps:
+    for _epochs in range(10):
         model.train()
         for batch in dataloader_train:
             optimizer.zero_grad()
