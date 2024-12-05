@@ -388,6 +388,9 @@ class Transformer(nn.Module):
         self.src_pad_idx = src_pad_idx
         self.tgt_pad_idx = tgt_pad_idx
 
+        # + 2 for sos and eos tokens
+        self.max_len = max_len + 2
+
     def create_src_mask(self, src):
         device = src.device
         # (batch_size, 1, 1, src_seq_len)
@@ -435,6 +438,65 @@ class Transformer(nn.Module):
             predicted_logits.append(decoder_out[:, -1, :])
 
         return torch.stack(predicted_logits, dim=1)
+
+    @torch.inference_mode()
+    def inference_forward_greedy(
+        self, src, sos_token, eos_token, device, max_len=None, return_up_to_eos=True
+    ):
+        self.eval()
+
+        src = src.to(device)
+
+        max_len = self.max_len if max_len is None else max_len
+
+        # Create the source mask
+        src_mask = self.create_src_mask(src)
+
+        # Pass the source through the encoder
+        encoder_out = self.encoder.forward(src, src_mask)
+
+        # Prepare target sequence starting with the start symbol
+        batch_size = src.size(0)
+        tgt = torch.full((batch_size, 1), sos_token, dtype=torch.long, device=device)
+
+        eos_tracker = torch.zeros((batch_size,), device=device)
+
+        for _ in range(max_len - 1):
+            # Create the target mask
+            tgt_mask = self.create_src_mask(tgt)
+
+            # Pass through the decoder
+            logits = self.decoder.forward(tgt, encoder_out, src_mask, tgt_mask)
+
+            # Take the last token's logits
+            next_token_logits = logits[:, -1, :]  # Shape: (batch_size, tgt_vocab_size)
+            next_token_logits = torch.nn.functional.softmax(next_token_logits, dim=-1)
+            # Get the most likely next token
+            next_token = torch.argmax(next_token_logits, dim=-1)  # Shape: (batch_size,)
+
+            eos_tracker += next_token == eos_token
+
+            # Append the next token to the target sequence
+            tgt = torch.cat([tgt, next_token.unsqueeze(1)], dim=1)
+
+            # Check for EOS token in all sequences and stop decoding for finished sequences
+            if eos_tracker.all():
+                break
+        if return_up_to_eos:
+            list_target = tgt.cpu().tolist()
+            indicies = list(map(lambda x: try_find(x, eos_token), list_target))
+            return list(map(lambda x: x[0][: x[1]], zip(list_target, indicies)))
+
+        return tgt
+
+
+def try_find(array: list, item):
+    try:
+        res = array.index(item) + 1
+    except Exception:
+        res = None
+
+    return res
 
 
 def greedy_decode(

@@ -7,7 +7,7 @@ import torch
 from pathlib import Path
 import os
 from uuid import uuid4
-from models.transformer import Transformer, greedy_decode
+from models.transformer import Transformer
 from torch.optim import AdamW
 from typing import Union
 
@@ -140,16 +140,24 @@ def train(
                     list(map(lambda x: x.ids, tokenizer.encode_batch(tgt)))
                 )
 
-                prediction = greedy_decode(
-                    model,
+                prediction = model.inference_forward_greedy(
                     src,
-                    tgt.size(-1),
                     tokenizer.token_to_id("[SOS]"),
                     tokenizer.token_to_id("[EOS]"),
                     device,
+                    max_len=tgt.size(-1),
                 )
+                #                prediction = greedy_decode(
+                #                    model,
+                #                    src,
+                #                    tgt.size(-1),
+                #                    tokenizer.token_to_id("[SOS]"),
+                #                    tokenizer.token_to_id("[EOS]"),
+                #                    device,
+                #                )
                 print(
-                    f"Model prediction: {tokenizer.decode_batch(prediction.cpu().tolist(), skip_special_tokens=False)[0]}\n"
+                    # f"Model prediction: {tokenizer.decode_batch(prediction.cpu().tolist(), skip_special_tokens=False)[0]}\n"
+                    f"Model prediction: {tokenizer.decode_batch(prediction, skip_special_tokens=False)[0]}\n"
                 )
                 print(f"GT: {tokenizer.decode_batch(tgt.cpu().tolist())[0]}\n")
         _epochs += 1
