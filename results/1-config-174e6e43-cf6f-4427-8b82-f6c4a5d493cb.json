@@ -1,0 +1,20 @@
+{
+    "model": {
+        "src_vocab_size": 119,
+        "tgt_vocab_size": 119,
+        "src_pad_idx": 0,
+        "tgt_pad_idx": 0,
+        "emb_dim": 128,
+        "num_layers": 1,
+        "num_heads": 8,
+        "forward_dim": 512,
+        "dropout": 0.05,
+        "max_len": 479
+    },
+    "training": {
+        "batch_size": 64,
+        "lr": 0.0007,
+        "grad_clip": 1.0,
+        "num_steps": 100000
+    }
+}

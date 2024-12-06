@@ -16,9 +16,14 @@ class MultiHeadAttention(nn.Module):
         head_dim = emb_dim // num_heads
 
         #        B           S      num_heads  head_dim -> # B x num_heads x S x head_dim
-        self.split = lambda x: x.view(
+        def split(x):
+            return x.view(
             x.size(0), x.size(1), num_heads, head_dim
-        ).transpose(1, 2)
+            ).transpose(1, 2)
+        self.split = split
+        # self.split = lambda x: x.view(
+            # x.size(0), x.size(1), num_heads, head_dim
+        # ).transpose(1, 2)
         # -> B x S x num_heads x head_dim # -> B x S x num_heads * head_dim
         # avoid copy
         self.collect = (
