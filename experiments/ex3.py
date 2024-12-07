@@ -35,7 +35,7 @@ def evaluate_model(
                 list(map(lambda x: x.ids, tokenizer.encode_batch(tgt)))
             ).to(device)
 
-            prediction = model.inference_forward_greedy(
+            prediction = model.inference_forward_greedy( # .greedy_decode
                 src,
                 tokenizer.token_to_id("[SOS]"),
                 tokenizer.token_to_id("[EOS]"),
@@ -48,14 +48,14 @@ def evaluate_model(
 
             for t, p in zip(tgt_decoded, prediction_decoded):
                 total_sequences += 1
-                correct_sequences += int(t == p)
+                correct_sequences += int(t == p) # only true if sequence is 100p match
 
                 t_tokens = t.split()
                 p_tokens = p.split()
 
                 total_tokens += len(t_tokens)
                 correct_tokens += sum(
-                    1 for t_tok, p_tok in zip(t_tokens, p_tokens) if t_tok == p_tok
+                    1 for t_tok, p_tok in zip(t_tokens, p_tokens) if t_tok == p_tok 
                 )
 
     token_accuracy = (correct_tokens / total_tokens) * 100
@@ -129,4 +129,4 @@ if __name__ == "__main__":
 
     models_folder = sys.argv[1]
     test_file = sys.argv[2]
-    main(models_folder, test_file)
+    main_eval(models_folder, test_file)
