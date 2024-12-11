@@ -34,6 +34,12 @@ def main():
             tgt_pad_idx=tokenizer.token_to_id("[PAD]"),
         )
         .set_max_len(max(dataset_train.max_len, dataset_test.max_len))
+        .set_path_train(
+            os.path.abspath(train_file)
+        )  # TODO if this has to be more dynamic we need to rewrite this.
+        .set_path_test(
+            os.path.abspath(test_file)
+        )  # TODO if this has to be more dynamic we need to rewrite this.
         .build()
     )
 
@@ -73,7 +79,9 @@ def main():
     )
 
     # Save
-    torch.save(trained_model, save_path / f"{num_experiment}-model-{uuid}.pt")
+    torch.save(
+        trained_model.state_dict(), save_path / f"{num_experiment}-model-{uuid}.pt"
+    )
 
 
 def train(
@@ -158,7 +166,7 @@ def train(
                 #                )
                 print(
                     # f"Model prediction: {tokenizer.decode_batch(prediction.cpu().tolist(), skip_special_tokens=False)[0]}\n"
-                    f"Model prediction: {tokenizer.decode_batch(prediction, skip_special_tokens=False)[0]}\n"
+                    f"Model prediction: {tokenizer.decode_batch(prediction, skip_special_tokens=True)[0]}\n"
                 )
                 print(f"GT: {tokenizer.decode_batch(tgt.cpu().tolist())[0]}\n")
         _epochs += 1
