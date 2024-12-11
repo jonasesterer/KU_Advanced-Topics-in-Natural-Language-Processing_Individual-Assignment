@@ -1,0 +1,17 @@
+[build-system]
+# These are the build requirements
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# Basic project metadata
+name = "kunlp"
+version = "0.1.0"
+description = "A transformer for the nlp course at KU"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+  { name = "Klaus Jupiter", email = "email@email.com" }
+]
+# If you have dependencies, list them here; it's okay to leave empty.
+dependencies = []
