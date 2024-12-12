@@ -98,10 +98,16 @@ def main_eval(models_folder: str, experiment_number: int):
         # model_labels.append(model_file.stem.split('-')[1]) # UUID
         model_labels.append(extract_num_from_path(test_file, experiment_number))  # UUID
 
+    idxs = np.argsort(model_labels)
+    token_accuracies = np.array(token_accuracies)[idxs].tolist()
+    model_labels = np.array(model_labels)[idxs].tolist()
+    sequence_accuracies = np.array(sequence_accuracies)[idxs].tolist()
     plot_results(model_labels, token_accuracies, sequence_accuracies)
 
 
-def extract_num_from_path(path: Path | str, experiment_number: int) -> int | float:
+def extract_num_from_path(
+    path: Path | str, experiment_number: int
+) -> int | float | str:
     if experiment_number == 1:
         return 0
 
@@ -123,6 +129,16 @@ def extract_num_from_path(path: Path | str, experiment_number: int) -> int | flo
         number = int(str(path)[start_idx + len(search_start) : end_idx])
         return number
 
+    elif experiment_number == 4:
+        if "jump" in str(path):
+            return "jump"
+        elif "turn_left" in str(path):
+            return "turn_left"
+        else:
+            raise NotImplementedError(
+                "Only works for jump or turn_left, TODO refactor this evaluation code to be for evaluating a specific thing rather than for an experiment"
+            )
+
     else:
         raise NotImplementedError(
             f"No extracting function is implemented for experiment {experiment_number}"
@@ -142,7 +158,7 @@ def load_model(
     return model
 
 
-def plot_results(model_labels, token_accuracies, sequence_accuracies):
+def plot_results2(model_labels, token_accuracies, sequence_accuracies):
     x = np.arange(len(model_labels))
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
@@ -161,6 +177,35 @@ def plot_results(model_labels, token_accuracies, sequence_accuracies):
     ax2.set_ylabel("Accuracy on new commands (%)")
     ax2.set_title("Sequence-Level Accuracy")
 
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_results(model_labels, token_accuracies, sequence_accuracies):
+    x = np.arange(len(model_labels))
+
+    # Create subplots
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+    # Token-level accuracy
+    ax1.bar(x, token_accuracies, color="skyblue", edgecolor="black")
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(model_labels, ha="right", fontsize=10)
+    ax1.set_xlabel("Number of Composed Commands Used For Training", fontsize=12)
+    ax1.set_ylabel("Accuracy on New Commands (%)", fontsize=12)
+    ax1.set_title("Token-Level Accuracy", fontsize=14, fontweight="bold")
+    ax1.grid(axis="y", linestyle="--", alpha=0.7)
+
+    # Sequence-level accuracy
+    ax2.bar(x, sequence_accuracies, color="lightcoral", edgecolor="black")
+    ax2.set_xticks(x)
+    ax2.set_xticklabels(model_labels, ha="right", fontsize=10)
+    ax2.set_xlabel("Number of Composed Commands Used For Training", fontsize=12)
+    ax2.set_ylabel("Accuracy on New Commands (%)", fontsize=12)
+    ax2.set_title("Sequence-Level Accuracy", fontsize=14, fontweight="bold")
+    ax2.grid(axis="y", linestyle="--", alpha=0.7)
+
+    # Adjust layout
     plt.tight_layout()
     plt.show()
 

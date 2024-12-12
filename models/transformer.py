@@ -3,8 +3,6 @@ import math
 
 import torch
 import torch.nn as nn
-from torch import Tensor
-from typing import Union
 
 
 class MultiHeadAttention(nn.Module):
@@ -17,12 +15,11 @@ class MultiHeadAttention(nn.Module):
 
         #        B           S      num_heads  head_dim -> # B x num_heads x S x head_dim
         def split(x):
-            return x.view(
-            x.size(0), x.size(1), num_heads, head_dim
-            ).transpose(1, 2)
+            return x.view(x.size(0), x.size(1), num_heads, head_dim).transpose(1, 2)
+
         self.split = split
         # self.split = lambda x: x.view(
-            # x.size(0), x.size(1), num_heads, head_dim
+        # x.size(0), x.size(1), num_heads, head_dim
         # ).transpose(1, 2)
         # -> B x S x num_heads x head_dim # -> B x S x num_heads * head_dim
         # avoid copy
@@ -504,65 +501,6 @@ def try_find(array: list, item):
     return res
 
 
-def greedy_decode(
-    model: Transformer,
-    src: Tensor,
-    max_len: int,
-    start_symbol: int,
-    eos_symbol: int,
-    device: Union[torch.device, str],
-) -> Tensor:
-    """
-    Greedy decoding for a Transformer model.
-
-    Args:
-        model: The Transformer model.
-        src: Tensor of shape (batch_size, src_seq_len) containing source sequences.
-        max_len: Maximum length of the target sequence.
-        start_symbol: The ID of the start token.
-        eos_symbol: The ID of the end-of-sequence (EOS) token.
-        device: Device to run the decoding (CPU or GPU).
-
-    Returns:
-        Tensor of shape (batch_size, generated_seq_len) with the generated sequences.
-    """
-    model.eval()  # Set the model to evaluation mode
-    src = src.to(device)
-
-    # Create the source mask
-    src_mask = model.create_src_mask(src)
-
-    # Pass the source through the encoder
-    encoder_out = model.encoder.forward(src, src_mask)
-
-    # Prepare target sequence starting with the start symbol
-    batch_size = src.size(0)
-    tgt = torch.full((batch_size, 1), start_symbol, dtype=torch.long, device=device)
-
-    for _ in range(max_len - 1):
-        # Create the target mask
-        tgt_mask = model.create_src_mask(tgt)
-
-        # Pass through the decoder
-        logits = model.decoder.forward(tgt, encoder_out, src_mask, tgt_mask)
-        assert (torch.isnan(logits).sum() == 0) and (torch.isinf(logits).sum() == 0)
-
-        # Take the last token's logits
-        next_token_logits = logits[:, -1, :]  # Shape: (batch_size, tgt_vocab_size)
-        next_token_logits = torch.nn.functional.softmax(next_token_logits, dim=-1)
-        # Get the most likely next token
-        next_token = torch.argmax(next_token_logits, dim=-1)  # Shape: (batch_size,)
-
-        # Append the next token to the target sequence
-        tgt = torch.cat([tgt, next_token.unsqueeze(1)], dim=1)
-
-        # Check for EOS token in all sequences and stop decoding for finished sequences
-        if (next_token == eos_symbol).all():
-            break
-
-    return tgt
-
-
 if __name__ == "__main__":
     # general test case
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -590,5 +528,4 @@ if __name__ == "__main__":
     ), f"wrong output shape, expected: {expected_out_shape}"
     print(model.train_forward(src_in, tgt_in, 1).shape)
     print(tgt_in.shape)
-    print(greedy_decode(model, src_in, 10, 2, 5, device))
 # %%
