@@ -1,4 +1,3 @@
-# %%
 import math
 
 import torch
@@ -484,6 +483,67 @@ class Transformer(nn.Module):
             # Check for EOS token in all sequences and stop decoding for finished sequences
             if eos_tracker.all():
                 break
+        if return_up_to_eos:
+            list_target = tgt.cpu().tolist()
+            indicies = list(map(lambda x: try_find(x, eos_token), list_target))
+            return list(map(lambda x: x[0][: x[1]], zip(list_target, indicies)))
+
+        return tgt
+
+    @torch.inference_mode()
+    def fixed_length_greedy(
+        self,
+        src: torch.Tensor,
+        sos_token: int,
+        eos_token: int,
+        device: torch.device,
+        fixed_lengths: torch.Tensor,
+        return_up_to_eos=True,
+    ):
+        self.eval()
+
+        src = src.to(device)
+        fixed_lengths = fixed_lengths.to(device)
+        max_len = int(fixed_lengths.max().item())
+
+        # Encode
+        src_mask = self.create_src_mask(src)
+        encoder_out = self.encoder.forward(src, src_mask)
+
+        batch_size = src.size(0)
+        tgt = torch.full((batch_size, 1), sos_token, dtype=torch.long, device=device)
+
+        for i in range(max_len - 1):
+            tgt_mask = self.create_src_mask(tgt)
+            logits = self.decoder.forward(tgt, encoder_out, src_mask, tgt_mask)
+
+            # Take the last token's logits
+            next_token_logits = logits[:, -1, :]
+            next_token_probs = torch.nn.functional.softmax(next_token_logits, dim=-1)
+
+            top_values, top_indices = torch.topk(next_token_probs, k=2, dim=-1)
+            chosen_tokens = torch.empty(batch_size, dtype=torch.long, device=device)
+
+            for k in range(batch_size):
+                desired_length = fixed_lengths[k].item()
+
+                if i < desired_length - 2:
+                    # Not the final token yet; must not choose EOS if top.
+                    chosen = top_indices[k, 0]
+                    if chosen == eos_token:
+                        chosen = top_indices[k, 1]
+                    chosen_tokens[k] = chosen
+
+                elif i == desired_length - 2:
+                    # This is the exact final token required (the EOS position).
+                    chosen_tokens[k] = eos_token
+
+                else:
+                    # Beyond the desired length, produce EOS as padding.
+                    chosen_tokens[k] = eos_token
+
+            tgt = torch.cat([tgt, chosen_tokens.unsqueeze(1)], dim=1)
+
         if return_up_to_eos:
             list_target = tgt.cpu().tolist()
             indicies = list(map(lambda x: try_find(x, eos_token), list_target))
