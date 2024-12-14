@@ -107,5 +107,5 @@ def plot(results: Dict[str, Tuple[float]]):
     ax1.set_axisbelow(True)
 
     plt.tight_layout()
-    plt.savefig("experiments/results/results_1.png")
+    # plt.savefig("experiments/results/results_1.png")
     plt.show()
