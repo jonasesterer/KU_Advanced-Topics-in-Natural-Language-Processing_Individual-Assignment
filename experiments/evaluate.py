@@ -7,20 +7,19 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 from experiments.experiment import ConfigExperiment
+from typing import Dict, Tuple
 
 
-def evaluate_model(
+def evaluate(
     model: Transformer,
     dataloader: DataLoader,
     tokenizer: Tokenizer,
     device: torch.device,
-) -> tuple:
+) -> Tuple[float, float]:
     total_tokens = 0
     correct_tokens = 0
     total_sequences = 0
     correct_sequences = 0
-
-    # loss_fn = torch.nn.CrossEntropyLoss(ignore_index=model.tgt_pad_idx)
 
     with torch.inference_mode():
         for batch in dataloader:
@@ -72,9 +71,7 @@ def main_eval(models_folder: str, experiment_number: int):
 
     models_folder_path = Path(models_folder)
 
-    token_accuracies = []
-    sequence_accuracies = []
-    model_labels = []
+    results = {}
 
     for model_file in models_folder_path.glob("*-model-*.pt"):
         config_file = Path(
@@ -89,67 +86,45 @@ def main_eval(models_folder: str, experiment_number: int):
         dataset_test = SCANDataset(test_file)
         dataloader_test = DataLoader(dataset_test, batch_size=256, shuffle=False)
 
-        token_acc, sequence_acc = evaluate_model(
-            model, dataloader_test, tokenizer, device
-        )
+        label = extract_label_from_path(test_file)
+        results[label] = evaluate(model, dataloader_test, tokenizer, device)
 
-        token_accuracies.append(token_acc)
-        sequence_accuracies.append(sequence_acc)
-        # model_labels.append(model_file.stem.split('-')[1]) # UUID
-        model_labels.append(extract_num_from_path(test_file, experiment_number))  # UUID
-
-    idxs = np.argsort(model_labels)
-    token_accuracies = np.array(token_accuracies)[idxs].tolist()
-    model_labels = np.array(model_labels)[idxs].tolist()
-    sequence_accuracies = np.array(sequence_accuracies)[idxs].tolist()
-    plot_results(model_labels, token_accuracies, sequence_accuracies)
+    plot(results)
 
 
-def extract_num_from_path(
-    path: Path | str, experiment_number: int
-) -> int | float | str:
-    if experiment_number == 1:
-        return 0
+def argsort(seq):
+    # Returns the indices that would sort the list
+    return sorted(range(len(seq)), key=seq.__getitem__)
 
-    elif experiment_number == 2:
-        search_start = "num"
-        search_end = "_rep"
-        start_idx = str(path).find(search_start)
-        end_idx = str(path).find(search_end)
 
-        number = int(str(path)[start_idx + len(search_start) : end_idx])
-        return number
+def apply_sort(list, seq):
+    return [list[i] for i in seq]
 
-    elif experiment_number == 3:
-        search_start = "num"
-        search_end = "_rep"
-        start_idx = str(path).find(search_start)
-        end_idx = str(path).find(search_end)
 
-        number = int(str(path)[start_idx + len(search_start) : end_idx])
-        return number
+def extract_label_from_path(path: Path | str) -> int | float | str:
+    search_start = "num"
+    search_end = "_rep"
+    start_idx = str(path).find(search_start)
+    end_idx = str(path).find(search_end)
 
-    elif experiment_number == 4:
+    if (start_idx == -1) or (end_idx == -1):
         if "jump" in str(path):
             return "jump"
         elif "turn_left" in str(path):
             return "turn_left"
         else:
             raise NotImplementedError(
-                "Only works for jump or turn_left, TODO refactor this evaluation code to be for evaluating a specific thing rather than for an experiment"
+                "Cannot evaluate the model for experiment 3, check which experiment the model trained to do."
             )
 
-    else:
-        raise NotImplementedError(
-            f"No extracting function is implemented for experiment {experiment_number}"
-        )
+    number = int(str(path)[start_idx + len(search_start) : end_idx])
+    return number
 
 
 def load_model(
     model_path: Path, config: ConfigExperiment, device: torch.device
 ) -> Transformer:
     model = Transformer(**config.model.model_dump())
-    # model = Transformer(**config_experiment["model"])
 
     state_dict = torch.load(model_path, map_location=device, weights_only=True)
     model.load_state_dict(state_dict)
@@ -158,30 +133,19 @@ def load_model(
     return model
 
 
-def plot_results2(model_labels, token_accuracies, sequence_accuracies):
-    x = np.arange(len(model_labels))
+def plot(results: Dict[str, Tuple[float, float]]):
+    # model_labels, token_accuracies, sequence_accuracies
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    model_labels = list(results.keys())
+    token_accuracies = list(map(lambda x: x[0], results.values()))
+    sequence_accuracies = list(map(lambda x: x[1], results.values()))
 
-    ax1.bar(x, token_accuracies)
-    ax1.set_xticks(x)
-    ax1.set_xticklabels(model_labels)
-    ax1.set_xlabel("Number of Composed Commands Used For Training")
-    ax1.set_ylabel("Accuracy on new commands (%)")
-    ax1.set_title("Token-Level Accuracy")
+    # Sort
+    idxs = argsort(model_labels)
+    model_labels = apply_sort(model_labels, idxs)
+    token_accuracies = apply_sort(token_accuracies, idxs)
+    sequence_accuracies = apply_sort(sequence_accuracies, idxs)
 
-    ax2.bar(x, sequence_accuracies)
-    ax2.set_xticks(x)
-    ax2.set_xticklabels(model_labels)
-    ax2.set_xlabel("Number of Composed Commands Used For Training")
-    ax2.set_ylabel("Accuracy on new commands (%)")
-    ax2.set_title("Sequence-Level Accuracy")
-
-    plt.tight_layout()
-    plt.show()
-
-
-def plot_results(model_labels, token_accuracies, sequence_accuracies):
     x = np.arange(len(model_labels))
 
     # Create subplots
