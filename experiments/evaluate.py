@@ -34,6 +34,10 @@ def main(models_folder: str, experiment_number: int):
                 evaluate,
                 plot,
             )
+        case _:
+            raise NotImplementedError(
+                f"Evaluation is not implemented for experiment {experiment_number}"
+            )
 
     results = {}
 
