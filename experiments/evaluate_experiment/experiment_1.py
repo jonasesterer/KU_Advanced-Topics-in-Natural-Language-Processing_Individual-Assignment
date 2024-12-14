@@ -94,18 +94,17 @@ def plot(results: Dict[str, Tuple[float]]):
 
     fig, ax1 = plt.subplots(figsize=(12, 6))
 
-    ax1.bar(x, sorted_token_accuracies)
+    ax1.bar(x, sorted_token_accuracies, color="skyblue", edgecolor="black")
     ax1.set_xticks(x)
     ax1.set_xticklabels(model_labels_with_percent)
     ax1.set_xlabel("Commands Used")
     ax1.set_ylabel("Accuracy (%)")
-    ax1.set_title("TExperiment 1")
+    ax1.set_title("Experiment 1")
 
     # Add vertical gridlines at intervals of 20
     ax1.set_yticks(range(0, 101, 20))
-    ax1.yaxis.grid(True, linestyle="-", linewidth=1)
+    ax1.yaxis.grid(True, linestyle="-", linewidth=1, alpha=0.7)
     ax1.set_axisbelow(True)
 
     plt.tight_layout()
-    # plt.savefig("experiments/results/results_1.png")
     plt.show()

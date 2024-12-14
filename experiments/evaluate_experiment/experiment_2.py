@@ -22,13 +22,7 @@ def apply_sort(list, seq):
 
 
 def extract_label_from_path(path: Path | str) -> int | float | str:
-    search_start = "num"
-    search_end = "_rep"
-    start_idx = str(path).find(search_start)
-    end_idx = str(path).find(search_end)
-
-    number = int(str(path)[start_idx + len(search_start) : end_idx])
-    return number
+    return 0
 
 
 def evaluate(
@@ -189,32 +183,52 @@ def plot(
     fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
     # Top-left: Token-Level Accuracy by target Length
-    axs[0, 0].bar(target_lengths, target_accuracies_token, color="C0")
+    axs[0, 0].bar(
+        target_lengths, target_accuracies_token, color="skyblue", edgecolor="black"
+    )
+    axs[0, 0].set_xticks(target_lengths)  # Set ticks to target_lengths
     axs[0, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
     axs[0, 0].set_ylabel("Token-Level Accuracy (%)")
-    axs[0, 0].set_title("Token-Level Accuracy by Target Length")
-    axs[0, 0].grid(axis="y", color="gray", linestyle="-", linewidth=0.5, alpha=0.7)
+    axs[0, 0].set_title(
+        "Token-Level Accuracy by Target Length", fontsize=14, fontweight="bold"
+    )
+    axs[0, 0].grid(axis="y", linestyle="--", alpha=0.7)
 
     # Top-right: Token-Level Accuracy by Input Length
-    axs[0, 1].bar(input_lengths, input_accuracies_token, color="C0")
+    axs[0, 1].bar(
+        input_lengths, input_accuracies_token, color="skyblue", edgecolor="black"
+    )
+    axs[0, 1].set_xticks(input_lengths)  # Set ticks to input_lengths
     axs[0, 1].set_xlabel("Command Length (words)")
     axs[0, 1].set_ylabel("Token-Level Accuracy (%)")
-    axs[0, 1].set_title("Token-Level Accuracy by Input Length")
-    axs[0, 1].grid(axis="y", color="gray", linestyle="-", linewidth=0.5, alpha=0.7)
+    axs[0, 1].set_title(
+        "Token-Level Accuracy by Input Length", fontsize=14, fontweight="bold"
+    )
+    axs[0, 1].grid(axis="y", linestyle="--", alpha=0.7)
 
     # Bottom-left: Sequence-Level Accuracy by target Length
-    axs[1, 0].bar(target_lengths, target_accuracies_seq, color="C1")
+    axs[1, 0].bar(
+        target_lengths, target_accuracies_seq, color="lightcoral", edgecolor="black"
+    )
+    axs[1, 0].set_xticks(target_lengths)  # Set ticks to target_lengths
     axs[1, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
     axs[1, 0].set_ylabel("Sequence-Level Accuracy (%)")
-    axs[1, 0].set_title("Sequence-Level Accuracy by Target Length")
-    axs[1, 0].grid(axis="y", color="gray", linestyle="-", linewidth=0.5, alpha=0.7)
+    axs[1, 0].set_title(
+        "Sequence-Level Accuracy by Target Length", fontsize=14, fontweight="bold"
+    )
+    axs[1, 0].grid(axis="y", linestyle="--", alpha=0.7)
 
     # Bottom-right: Sequence-Level Accuracy by Input Length
-    axs[1, 1].bar(input_lengths, input_accuracies_seq, color="C1")
+    axs[1, 1].bar(
+        input_lengths, input_accuracies_seq, color="lightcoral", edgecolor="black"
+    )
+    axs[1, 1].set_xticks(input_lengths)
     axs[1, 1].set_xlabel("Command Length (words)")
     axs[1, 1].set_ylabel("Sequence-Level Accuracy (%)")
-    axs[1, 1].set_title("Sequence-Level Accuracy by Input Length")
-    axs[1, 1].grid(axis="y", color="gray", linestyle="-", linewidth=0.5, alpha=0.7)
+    axs[1, 1].set_title(
+        "Sequence-Level Accuracy by Input Length", fontsize=14, fontweight="bold"
+    )
+    axs[1, 1].grid(axis="y", linestyle="--", alpha=0.7)
 
     plt.tight_layout()
     plt.show()
