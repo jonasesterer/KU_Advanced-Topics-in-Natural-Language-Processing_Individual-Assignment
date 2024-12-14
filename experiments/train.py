@@ -1,21 +1,26 @@
+import torch
+from torch.utils.data import DataLoader
+from torch.optim import AdamW
+
+from tokenizers import Tokenizer
+
+import sys
+import os
+from pathlib import Path
+from uuid import uuid4
+from typing import Union
+
+from models.transformer import Transformer
+
 from experiments.experiment import BuilderConfigExperiment
 from experiments.tokenizer_dataloader import SCANDataset
-from torch.utils.data import DataLoader
-from tokenizers import Tokenizer
-import sys
-import torch
-from pathlib import Path
-import os
-from uuid import uuid4
-from models.transformer import Transformer
-from torch.optim import AdamW
-from typing import Union
+
+from tqdm import tqdm
 
 
 def main():
     # Setup
     num_experiment, train_file, test_file, save_path = sys.argv[1:]
-    # num_experiment, train_file, test_file, save_path = sys.argv[-1].split(" ")
 
     save_path = Path(save_path)
 
@@ -74,8 +79,8 @@ def main():
         device,
         dataloader_train,
         dataloader_test,
-        num_steps=config_experiment.training.num_steps,
         grad_clip=config_experiment.training.grad_clip,
+        epochs=int(config_experiment.training.num_steps // len(dataset_train)),
     )
 
     # Save
@@ -91,15 +96,12 @@ def train(
     device: Union[torch.device, str],
     dataloader_train: DataLoader,
     dataloader_test: DataLoader,
-    num_steps: int,
     grad_clip: float,
+    epochs: int = 10,
 ):
-    # TODO add logging
     loss_fn = torch.nn.CrossEntropyLoss(ignore_index=model.tgt_pad_idx)
 
-    # _epochs = 0
-    # while num_steps:
-    for _epochs in range(10):
+    for epoch in tqdm(range(epochs), desc="Training", unit="epoch"):
         model.train()
         for batch in dataloader_train:
             optimizer.zero_grad()
@@ -118,7 +120,6 @@ def train(
             outputs = model.train_forward(
                 src=src, tgt=tgt, sos_token=tokenizer.token_to_id("[SOS]")
             )
-            # outputs = model(src=src, tgt=tgt)
 
             loss = loss_fn(
                 outputs.view(-1, outputs.size(-1)), tgt[:, 1:].contiguous().view(-1)
@@ -129,13 +130,7 @@ def train(
 
             optimizer.step()
 
-            num_steps -= len(batch)
-
-            if num_steps <= 0:
-                num_steps = False
-                break
-
-        if _epochs % 5 == 0 or not num_steps:
+        if (epoch % 5 == 0) or (epoch == epochs):
             with torch.inference_mode():
                 item = next(iter(dataloader_test))
                 src = item["src"]
@@ -156,20 +151,12 @@ def train(
                     device,
                     max_len=tgt.size(-1),
                 )
-                #                prediction = greedy_decode(
-                #                    model,
-                #                    src,
-                #                    tgt.size(-1),
-                #                    tokenizer.token_to_id("[SOS]"),
-                #                    tokenizer.token_to_id("[EOS]"),
-                #                    device,
-                #                )
+
                 print(
-                    # f"Model prediction: {tokenizer.decode_batch(prediction.cpu().tolist(), skip_special_tokens=False)[0]}\n"
                     f"Model prediction: {tokenizer.decode_batch(prediction, skip_special_tokens=True)[0]}\n"
                 )
                 print(f"GT: {tokenizer.decode_batch(tgt.cpu().tolist())[0]}\n")
-        _epochs += 1
+
     return model
 
 
