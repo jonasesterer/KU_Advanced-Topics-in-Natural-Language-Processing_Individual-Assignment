@@ -1,13 +1,44 @@
 import torch
-from experiments.tokenizer_dataloader import SCANDataset
-from tokenizers import Tokenizer
 from torch.utils.data import DataLoader
+
+from tokenizers import Tokenizer
+
 from models.transformer import Transformer
-from pathlib import Path
+
 import matplotlib.pyplot as plt
+
 import numpy as np
-from experiments.experiment import ConfigExperiment
+
+from pathlib import Path
 from typing import Dict, Tuple
+
+
+def argsort(seq):
+    return sorted(range(len(seq)), key=seq.__getitem__)
+
+
+def apply_sort(list, seq):
+    return [list[i] for i in seq]
+
+
+def extract_label_from_path(path: Path | str) -> int | float | str:
+    search_start = "num"
+    search_end = "_rep"
+    start_idx = str(path).find(search_start)
+    end_idx = str(path).find(search_end)
+
+    if (start_idx == -1) or (end_idx == -1):
+        if "jump" in str(path):
+            return "jump"
+        elif "turn_left" in str(path):
+            return "turn_left"
+        else:
+            raise NotImplementedError(
+                "Cannot evaluate the model for experiment 3, check which experiment the model trained to do."
+            )
+
+    number = int(str(path)[start_idx + len(search_start) : end_idx])
+    return number
 
 
 def evaluate(
@@ -43,11 +74,10 @@ def evaluate(
 
             tgt_decoded = tokenizer.decode_batch(tgt.cpu().tolist())
             prediction_decoded = tokenizer.decode_batch(prediction)
-            # Has to be rewritten to account for strings
+
             for t, p in zip(tgt_decoded, prediction_decoded):
-                # TODO inspect
                 total_sequences += 1
-                correct_sequences += int(t == p)  # only true if sequence is 100p match
+                correct_sequences += int(t == p)
 
                 t_tokens = t.split()
                 p_tokens = p.split()
@@ -63,79 +93,8 @@ def evaluate(
     return token_accuracy, sequence_accuracy
 
 
-def main_eval(models_folder: str, experiment_number: int):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    path_tokenizer = str(Path(__file__).parent.parent / "custom_tokenizer.json")
-    tokenizer: Tokenizer = Tokenizer.from_file(path_tokenizer)
-
-    models_folder_path = Path(models_folder)
-
-    results = {}
-
-    for model_file in models_folder_path.glob("*-model-*.pt"):
-        config_file = Path(
-            str(model_file).replace("model", "config").replace(".pt", ".json")
-        )
-        config = ConfigExperiment.from_pretrained(config_file)
-
-        model = load_model(model_file, config, device)
-
-        test_file = config.training.file_path_test
-
-        dataset_test = SCANDataset(test_file)
-        dataloader_test = DataLoader(dataset_test, batch_size=256, shuffle=False)
-
-        label = extract_label_from_path(test_file)
-        results[label] = evaluate(model, dataloader_test, tokenizer, device)
-
-    plot(results)
-
-
-def argsort(seq):
-    # Returns the indices that would sort the list
-    return sorted(range(len(seq)), key=seq.__getitem__)
-
-
-def apply_sort(list, seq):
-    return [list[i] for i in seq]
-
-
-def extract_label_from_path(path: Path | str) -> int | float | str:
-    search_start = "num"
-    search_end = "_rep"
-    start_idx = str(path).find(search_start)
-    end_idx = str(path).find(search_end)
-
-    if (start_idx == -1) or (end_idx == -1):
-        if "jump" in str(path):
-            return "jump"
-        elif "turn_left" in str(path):
-            return "turn_left"
-        else:
-            raise NotImplementedError(
-                "Cannot evaluate the model for experiment 3, check which experiment the model trained to do."
-            )
-
-    number = int(str(path)[start_idx + len(search_start) : end_idx])
-    return number
-
-
-def load_model(
-    model_path: Path, config: ConfigExperiment, device: torch.device
-) -> Transformer:
-    model = Transformer(**config.model.model_dump())
-
-    state_dict = torch.load(model_path, map_location=device, weights_only=True)
-    model.load_state_dict(state_dict)
-    model = model.to(device)
-    model.eval()
-    return model
-
-
 def plot(results: Dict[str, Tuple[float, float]]):
-    # model_labels, token_accuracies, sequence_accuracies
-
+    # Extract statistics
     model_labels = list(results.keys())
     token_accuracies = list(map(lambda x: x[0], results.values()))
     sequence_accuracies = list(map(lambda x: x[1], results.values()))
@@ -172,16 +131,3 @@ def plot(results: Dict[str, Tuple[float, float]]):
     # Adjust layout
     plt.tight_layout()
     plt.show()
-
-
-if __name__ == "__main__":
-    import sys
-
-    args = sys.argv[1:]
-
-    assert len(args) == 2, "Provide: <PATH-MODELS+CONFIGS> <EXPERIMENT-NUMBER>"
-
-    models_folder = sys.argv[1]
-    experiment_number = int(sys.argv[2])
-
-    main_eval(models_folder, experiment_number)
