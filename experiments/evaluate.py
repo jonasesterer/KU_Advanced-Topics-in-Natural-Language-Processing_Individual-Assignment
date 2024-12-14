@@ -7,7 +7,7 @@ from pathlib import Path
 from experiments.experiment import ConfigExperiment
 
 
-def main_eval(models_folder: str, experiment_number: int):
+def main(models_folder: str, experiment_number: int):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     path_tokenizer = str(Path(__file__).parent.parent / "custom_tokenizer.json")
@@ -78,4 +78,4 @@ if __name__ == "__main__":
     models_folder = sys.argv[1]
     experiment_number = int(sys.argv[2])
 
-    main_eval(models_folder, experiment_number)
+    main(models_folder, experiment_number)
