@@ -130,7 +130,7 @@ def train(
 
             optimizer.step()
 
-        if epoch == epochs:
+        if epoch == (epochs - 1):
             with torch.inference_mode():
                 item = next(iter(dataloader_test))
                 src = item["src"]
