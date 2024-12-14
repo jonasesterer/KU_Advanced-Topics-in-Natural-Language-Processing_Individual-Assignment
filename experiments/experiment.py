@@ -72,6 +72,9 @@ class BuilderConfigExperiment:
         else:
             raise NotImplementedError(f"Experiment number: {num} does not exist")
 
+        if num == 2:
+            self.config_training["num_steps"] = 10**5 * 2
+
         return self
 
     def set_vocab_sizes(self, src_vocab_size, tgt_vocab_size):
