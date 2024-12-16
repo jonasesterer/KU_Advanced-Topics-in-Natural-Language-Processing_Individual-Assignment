@@ -73,10 +73,6 @@ class MultiHeadAttention(nn.Module):
 
         query = self.linear_out(attention)
 
-        # not sure what the functionality of this is:
-        # if mask is not None:
-        # key_out = key_out.masked_fill(mask == 0, -1e20)
-
         return query
 
     def apply_energy_mask(self, tensor: torch.Tensor, mask=None):
@@ -425,7 +421,7 @@ class Transformer(nn.Module):
 
         return decoder_out
 
-    def train_forward(self, src, tgt, sos_token):
+    def train_forward(self, src, tgt):
         src_mask = self.create_src_mask(src)
         encoder_out = self.encoder.forward(src, src_mask)
 

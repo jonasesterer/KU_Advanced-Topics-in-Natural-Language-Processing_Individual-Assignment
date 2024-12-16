@@ -10,8 +10,6 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from typing import Dict, Tuple
 
-from tqdm import tqdm
-
 
 def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
@@ -45,7 +43,7 @@ def evaluate(
     sos_id: int = tokenizer.token_to_id("[SOS]")
 
     with torch.inference_mode():
-        for batch in tqdm(dataloader, desc="Evaluating", unit="batch"):
+        for batch in dataloader:
             src = batch["src"]
             tgt = batch["tgt"]
 

@@ -118,7 +118,8 @@ def train(
             ).to(device)
 
             outputs = model.train_forward(
-                src=src, tgt=tgt, sos_token=tokenizer.token_to_id("[SOS]")
+                src=src,
+                tgt=tgt,
             )
 
             loss = loss_fn(
