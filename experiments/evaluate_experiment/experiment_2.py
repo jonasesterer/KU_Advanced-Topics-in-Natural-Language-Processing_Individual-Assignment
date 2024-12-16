@@ -5,11 +5,13 @@ from tokenizers import Tokenizer
 
 from models.transformer import Transformer
 
+import matplotlib
 import matplotlib.pyplot as plt
 
 from pathlib import Path
 from typing import Dict, Tuple
 
+matplotlib.use('TkAgg')
 
 def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
@@ -28,6 +30,7 @@ def evaluate(
     dataloader: DataLoader,
     tokenizer: Tokenizer,
     device: torch.device,
+    oracle: bool = False
 ) -> Tuple[
     Dict[str, Dict[str, int]],
     Dict[str, Dict[str, int]],
@@ -59,13 +62,22 @@ def evaluate(
             eos_positions = (tgt_encoded == eos_id).float().argmax(dim=1)
             fixed_lengths = eos_positions + 1
 
-            prediction = model.fixed_length_greedy(
-                src_encoded,
-                sos_id,
-                eos_id,
-                device,
-                fixed_lengths=fixed_lengths,
-            )
+            if oracle:
+                prediction = model.fixed_length_greedy(
+                    src_encoded,
+                    sos_id,
+                    eos_id,
+                    device,
+                    fixed_lengths=fixed_lengths,
+                )
+            else:
+                prediction = model.inference_forward_greedy(
+                    src_encoded,
+                    sos_id,
+                    eos_id,
+                    device,
+                    max_len=tgt_encoded.size(-1),
+                )
 
             tgt_decoded = tokenizer.decode_batch(tgt_encoded.cpu().tolist())
             prediction_decoded = tokenizer.decode_batch(prediction)
@@ -118,115 +130,127 @@ def evaluate(
 
 
 def plot(
-    results: Dict[
-        str,
-        Tuple[
-            Dict[str, Dict[str, int]],
-            Dict[str, Dict[str, int]],
-            Dict[str, Dict[str, int]],
-            Dict[str, Dict[str, int]],
+        results: Dict[
+            int,
+            Tuple[
+                Dict[str, Dict[str, int]],
+                Dict[str, Dict[str, int]],
+                Dict[str, Dict[str, int]],
+                Dict[str, Dict[str, int]],
+            ],
         ],
-    ],
 ):
+    print(results.keys())
     assert (
-        len(results.keys()) == 1
-    ), "For experiment 2, we expect to only evaluate one model"
+            len(results.keys()) == 2
+    ), "For experiment 2, we expect to only evaluate two models"
 
-    unpacked_results = list(results.values())[0]
+    # Unpack results for each model
+    model_1_results = results[0]
+    model_2_results = results[1]
 
-    input_length_stats = unpacked_results[0]
-    target_length_stats = unpacked_results[1]
-    input_length_seq_stats = unpacked_results[2]
-    target_length_seq_stats = unpacked_results[3]
+    # Define a function to process results and generate plots
+    def prepare_and_plot(unpacked_results, title_suffix):
+        input_length_stats = unpacked_results[0]
+        target_length_stats = unpacked_results[1]
+        input_length_seq_stats = unpacked_results[2]
+        target_length_seq_stats = unpacked_results[3]
 
-    # Prepare data for token-level accuracy by target length
-    target_lengths = sorted(target_length_stats.keys())
-    target_accuracies_token = [
-        100.0
-        * (
-            target_length_stats[length]["correct"]
-            / target_length_stats[length]["total"]
+        # Prepare data for token-level accuracy by target length
+        target_lengths = sorted(target_length_stats.keys())
+        target_accuracies_token = [
+            100.0
+            * (
+                    target_length_stats[length]["correct"]
+                    / target_length_stats[length]["total"]
+            )
+            for length in target_lengths
+        ]
+
+        # Prepare data for token-level accuracy by input length
+        input_lengths = sorted(input_length_stats.keys())
+        input_accuracies_token = [
+            100.0
+            * (input_length_stats[length]["correct"] / input_length_stats[length]["total"])
+            for length in input_lengths
+        ]
+
+        # Prepare data for sequence-level accuracy by target length
+        target_accuracies_seq = [
+            100.0
+            * (
+                    target_length_seq_stats[length]["correct"]
+                    / target_length_seq_stats[length]["total"]
+            )
+            for length in target_lengths
+        ]
+
+        # Prepare data for sequence-level accuracy by input length
+        input_accuracies_seq = [
+            100.0
+            * (
+                    input_length_seq_stats[length]["correct"]
+                    / input_length_seq_stats[length]["total"]
+            )
+            for length in input_lengths
+        ]
+
+        fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+
+        # Top-left: Token-Level Accuracy by Target Length
+        axs[0, 0].bar(
+            target_lengths, target_accuracies_token, color="skyblue", edgecolor="black"
         )
-        for length in target_lengths
-    ]
-
-    # Prepare data for token-level accuracy by input length
-    input_lengths = sorted(input_length_stats.keys())
-    input_accuracies_token = [
-        100.0
-        * (input_length_stats[length]["correct"] / input_length_stats[length]["total"])
-        for length in input_lengths
-    ]
-
-    # Prepare data for sequence-level accuracy by target length
-    target_accuracies_seq = [
-        100.0
-        * (
-            target_length_seq_stats[length]["correct"]
-            / target_length_seq_stats[length]["total"]
+        axs[0, 0].set_xticks(target_lengths)
+        axs[0, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
+        axs[0, 0].set_ylabel("Token-Level Accuracy (%)")
+        axs[0, 0].set_title(
+            f"Token-Level Accuracy by Target Length {title_suffix}", fontsize=14, fontweight="bold"
         )
-        for length in target_lengths
-    ]
+        axs[0, 0].grid(axis="y", linestyle="--", alpha=0.7)
 
-    # Prepare data for sequence-level accuracy by input length
-    input_accuracies_seq = [
-        100.0
-        * (
-            input_length_seq_stats[length]["correct"]
-            / input_length_seq_stats[length]["total"]
+        # Top-right: Token-Level Accuracy by Input Length
+        axs[0, 1].bar(
+            input_lengths, input_accuracies_token, color="skyblue", edgecolor="black"
         )
-        for length in input_lengths
-    ]
+        axs[0, 1].set_xticks(input_lengths)
+        axs[0, 1].set_xlabel("Command Length (words)")
+        axs[0, 1].set_ylabel("Token-Level Accuracy (%)")
+        axs[0, 1].set_title(
+            f"Token-Level Accuracy by Input Length {title_suffix}", fontsize=14, fontweight="bold"
+        )
+        axs[0, 1].grid(axis="y", linestyle="--", alpha=0.7)
 
-    fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+        # Bottom-left: Sequence-Level Accuracy by Target Length
+        axs[1, 0].bar(
+            target_lengths, target_accuracies_seq, color="lightcoral", edgecolor="black"
+        )
+        axs[1, 0].set_xticks(target_lengths)
+        axs[1, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
+        axs[1, 0].set_ylabel("Sequence-Level Accuracy (%)")
+        axs[1, 0].set_title(
+            f"Sequence-Level Accuracy by Target Length {title_suffix}", fontsize=14, fontweight="bold"
+        )
+        axs[1, 0].grid(axis="y", linestyle="--", alpha=0.7)
 
-    # Top-left: Token-Level Accuracy by target Length
-    axs[0, 0].bar(
-        target_lengths, target_accuracies_token, color="skyblue", edgecolor="black"
-    )
-    axs[0, 0].set_xticks(target_lengths)  # Set ticks to target_lengths
-    axs[0, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
-    axs[0, 0].set_ylabel("Token-Level Accuracy (%)")
-    axs[0, 0].set_title(
-        "Token-Level Accuracy by Target Length", fontsize=14, fontweight="bold"
-    )
-    axs[0, 0].grid(axis="y", linestyle="--", alpha=0.7)
+        # Bottom-right: Sequence-Level Accuracy by Input Length
+        axs[1, 1].bar(
+            input_lengths, input_accuracies_seq, color="lightcoral", edgecolor="black"
+        )
+        axs[1, 1].set_xticks(input_lengths)
+        axs[1, 1].set_xlabel("Command Length (words)")
+        axs[1, 1].set_ylabel("Sequence-Level Accuracy (%)")
+        axs[1, 1].set_title(
+            f"Sequence-Level Accuracy by Input Length {title_suffix}", fontsize=14, fontweight="bold"
+        )
+        axs[1, 1].grid(axis="y", linestyle="--", alpha=0.7)
 
-    # Top-right: Token-Level Accuracy by Input Length
-    axs[0, 1].bar(
-        input_lengths, input_accuracies_token, color="skyblue", edgecolor="black"
-    )
-    axs[0, 1].set_xticks(input_lengths)  # Set ticks to input_lengths
-    axs[0, 1].set_xlabel("Command Length (words)")
-    axs[0, 1].set_ylabel("Token-Level Accuracy (%)")
-    axs[0, 1].set_title(
-        "Token-Level Accuracy by Input Length", fontsize=14, fontweight="bold"
-    )
-    axs[0, 1].grid(axis="y", linestyle="--", alpha=0.7)
+        plt.tight_layout()
+        plt.show()
 
-    # Bottom-left: Sequence-Level Accuracy by target Length
-    axs[1, 0].bar(
-        target_lengths, target_accuracies_seq, color="lightcoral", edgecolor="black"
-    )
-    axs[1, 0].set_xticks(target_lengths)  # Set ticks to target_lengths
-    axs[1, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
-    axs[1, 0].set_ylabel("Sequence-Level Accuracy (%)")
-    axs[1, 0].set_title(
-        "Sequence-Level Accuracy by Target Length", fontsize=14, fontweight="bold"
-    )
-    axs[1, 0].grid(axis="y", linestyle="--", alpha=0.7)
+    # Plot results for the first model
+    prepare_and_plot(model_1_results, title_suffix="(Standard)")
 
-    # Bottom-right: Sequence-Level Accuracy by Input Length
-    axs[1, 1].bar(
-        input_lengths, input_accuracies_seq, color="lightcoral", edgecolor="black"
-    )
-    axs[1, 1].set_xticks(input_lengths)
-    axs[1, 1].set_xlabel("Command Length (words)")
-    axs[1, 1].set_ylabel("Sequence-Level Accuracy (%)")
-    axs[1, 1].set_title(
-        "Sequence-Level Accuracy by Input Length", fontsize=14, fontweight="bold"
-    )
-    axs[1, 1].grid(axis="y", linestyle="--", alpha=0.7)
+    # Plot results for the second model with "oracle lengths"
+    prepare_and_plot(model_2_results, title_suffix="(Oracle Lengths)")
 
-    plt.tight_layout()
-    plt.show()

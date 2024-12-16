@@ -54,14 +54,18 @@ def main(models_folder: str, experiment_number: int):
         dataset_test = SCANDataset(test_file)
         dataloader_test = DataLoader(dataset_test, batch_size=256, shuffle=False)
 
-        label = extract_label_from_path(test_file)
-        results[label] = evaluate(model, dataloader_test, tokenizer, device)
+        if experiment_number == 2:
+            results[0] = evaluate(model, dataloader_test, tokenizer, device)
+            results[1] = evaluate(model, dataloader_test, tokenizer, device, oracle=True)
+        else:
+            label = extract_label_from_path(test_file)
+            results[label] = evaluate(model, dataloader_test, tokenizer, device)
 
     plot(results)
 
 
 def load_model(
-    model_path: Path, config: ConfigExperiment, device: torch.device
+        model_path: Path, config: ConfigExperiment, device: torch.device
 ) -> Transformer:
     model = Transformer(**config.model.model_dump())
 
