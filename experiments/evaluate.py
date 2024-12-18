@@ -5,9 +5,11 @@ from torch.utils.data import DataLoader
 from models.transformer import Transformer
 from pathlib import Path
 from experiments.experiment import ConfigExperiment
+from transformers import set_seed
 
 
 def main(models_folder: str, experiment_number: int):
+    set_seed(0)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     path_tokenizer = str(Path(__file__).parent.parent / "custom_tokenizer.json")
@@ -15,6 +17,9 @@ def main(models_folder: str, experiment_number: int):
 
     models_folder_path = Path(models_folder)
 
+    # TODO in these we can have an expected results that is contingent on the
+    # label, si
+    # plot should take an optional argument, which is expected results
     match experiment_number:
         case 1:
             from experiments.evaluate_experiment.experiment_1 import (
@@ -52,7 +57,7 @@ def main(models_folder: str, experiment_number: int):
         test_file = config.training.file_path_test
 
         dataset_test = SCANDataset(test_file)
-        dataloader_test = DataLoader(dataset_test, batch_size=256, shuffle=False)
+        dataloader_test = DataLoader(dataset_test, batch_size=1024, shuffle=False)
 
         label = extract_label_from_path(test_file)
         results[label] = evaluate(model, dataloader_test, tokenizer, device)

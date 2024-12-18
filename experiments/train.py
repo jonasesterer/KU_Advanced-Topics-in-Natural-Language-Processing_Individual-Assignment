@@ -11,6 +11,7 @@ from uuid import uuid4
 from typing import Union
 
 from models.transformer import Transformer
+from transformers import set_seed
 
 from experiments.experiment import BuilderConfigExperiment
 from experiments.tokenizer_dataloader import SCANDataset
@@ -19,6 +20,8 @@ from tqdm import tqdm
 
 
 def main():
+    set_seed(0)
+
     # Setup
     num_experiment, train_file, test_file, save_path = sys.argv[1:]
 
