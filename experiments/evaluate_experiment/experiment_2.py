@@ -11,7 +11,8 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from typing import Dict, Tuple
 
-matplotlib.use('TkAgg')
+matplotlib.use("TkAgg")
+
 
 def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
@@ -30,7 +31,31 @@ def evaluate(
     dataloader: DataLoader,
     tokenizer: Tokenizer,
     device: torch.device,
-    oracle: bool = False
+) -> Tuple[
+    Tuple[
+        Dict[str, Dict[str, int]],
+        Dict[str, Dict[str, int]],
+        Dict[str, Dict[str, int]],
+        Dict[str, Dict[str, int]],
+    ],
+    Tuple[
+        Dict[str, Dict[str, int]],
+        Dict[str, Dict[str, int]],
+        Dict[str, Dict[str, int]],
+        Dict[str, Dict[str, int]],
+    ],
+]:
+    normal = inner_evaluate(model, dataloader, tokenizer, device)
+    set_length = inner_evaluate(model, dataloader, tokenizer, device, oracle=True)
+    return (normal, set_length)
+
+
+def inner_evaluate(
+    model: Transformer,
+    dataloader: DataLoader,
+    tokenizer: Tokenizer,
+    device: torch.device,
+    oracle: bool = False,
 ) -> Tuple[
     Dict[str, Dict[str, int]],
     Dict[str, Dict[str, int]],
@@ -130,8 +155,15 @@ def evaluate(
 
 
 def plot(
-        results: Dict[
-            int,
+    results: Dict[
+        str,
+        Tuple[
+            Tuple[
+                Dict[str, Dict[str, int]],
+                Dict[str, Dict[str, int]],
+                Dict[str, Dict[str, int]],
+                Dict[str, Dict[str, int]],
+            ],
             Tuple[
                 Dict[str, Dict[str, int]],
                 Dict[str, Dict[str, int]],
@@ -139,15 +171,16 @@ def plot(
                 Dict[str, Dict[str, int]],
             ],
         ],
+    ],
 ):
-    print(results.keys())
     assert (
-            len(results.keys()) == 2
-    ), "For experiment 2, we expect to only evaluate two models"
+        len(results.keys()) == 1
+    ), "For experiment 2, we expect to only evaluate one model"
 
+    values = list(results.values())[0]
     # Unpack results for each model
-    model_1_results = results[0]
-    model_2_results = results[1]
+    model_1_results = values[0]
+    model_2_results = values[1]
 
     # Define a function to process results and generate plots
     def prepare_and_plot(unpacked_results, title_suffix):
@@ -161,8 +194,8 @@ def plot(
         target_accuracies_token = [
             100.0
             * (
-                    target_length_stats[length]["correct"]
-                    / target_length_stats[length]["total"]
+                target_length_stats[length]["correct"]
+                / target_length_stats[length]["total"]
             )
             for length in target_lengths
         ]
@@ -171,7 +204,10 @@ def plot(
         input_lengths = sorted(input_length_stats.keys())
         input_accuracies_token = [
             100.0
-            * (input_length_stats[length]["correct"] / input_length_stats[length]["total"])
+            * (
+                input_length_stats[length]["correct"]
+                / input_length_stats[length]["total"]
+            )
             for length in input_lengths
         ]
 
@@ -179,8 +215,8 @@ def plot(
         target_accuracies_seq = [
             100.0
             * (
-                    target_length_seq_stats[length]["correct"]
-                    / target_length_seq_stats[length]["total"]
+                target_length_seq_stats[length]["correct"]
+                / target_length_seq_stats[length]["total"]
             )
             for length in target_lengths
         ]
@@ -189,8 +225,8 @@ def plot(
         input_accuracies_seq = [
             100.0
             * (
-                    input_length_seq_stats[length]["correct"]
-                    / input_length_seq_stats[length]["total"]
+                input_length_seq_stats[length]["correct"]
+                / input_length_seq_stats[length]["total"]
             )
             for length in input_lengths
         ]
@@ -205,7 +241,9 @@ def plot(
         axs[0, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
         axs[0, 0].set_ylabel("Token-Level Accuracy (%)")
         axs[0, 0].set_title(
-            f"Token-Level Accuracy by Target Length {title_suffix}", fontsize=14, fontweight="bold"
+            f"Token-Level Accuracy by Target Length {title_suffix}",
+            fontsize=14,
+            fontweight="bold",
         )
         axs[0, 0].grid(axis="y", linestyle="--", alpha=0.7)
 
@@ -217,7 +255,9 @@ def plot(
         axs[0, 1].set_xlabel("Command Length (words)")
         axs[0, 1].set_ylabel("Token-Level Accuracy (%)")
         axs[0, 1].set_title(
-            f"Token-Level Accuracy by Input Length {title_suffix}", fontsize=14, fontweight="bold"
+            f"Token-Level Accuracy by Input Length {title_suffix}",
+            fontsize=14,
+            fontweight="bold",
         )
         axs[0, 1].grid(axis="y", linestyle="--", alpha=0.7)
 
@@ -229,7 +269,9 @@ def plot(
         axs[1, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
         axs[1, 0].set_ylabel("Sequence-Level Accuracy (%)")
         axs[1, 0].set_title(
-            f"Sequence-Level Accuracy by Target Length {title_suffix}", fontsize=14, fontweight="bold"
+            f"Sequence-Level Accuracy by Target Length {title_suffix}",
+            fontsize=14,
+            fontweight="bold",
         )
         axs[1, 0].grid(axis="y", linestyle="--", alpha=0.7)
 
@@ -241,7 +283,9 @@ def plot(
         axs[1, 1].set_xlabel("Command Length (words)")
         axs[1, 1].set_ylabel("Sequence-Level Accuracy (%)")
         axs[1, 1].set_title(
-            f"Sequence-Level Accuracy by Input Length {title_suffix}", fontsize=14, fontweight="bold"
+            f"Sequence-Level Accuracy by Input Length {title_suffix}",
+            fontsize=14,
+            fontweight="bold",
         )
         axs[1, 1].grid(axis="y", linestyle="--", alpha=0.7)
 
@@ -253,4 +297,3 @@ def plot(
 
     # Plot results for the second model with "oracle lengths"
     prepare_and_plot(model_2_results, title_suffix="(Oracle Lengths)")
-
