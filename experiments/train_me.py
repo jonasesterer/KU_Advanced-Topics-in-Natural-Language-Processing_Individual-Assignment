@@ -70,7 +70,8 @@ def main():
 
     # Number of epochs (example: total steps / dataset size)
     steps_per_epoch = len(dataloader_train)
-    epochs = int(config_experiment.training.num_steps // len(dataset_train))
+    epochs_rounded = int(config_experiment.training.num_steps // len(dataset_train))
+    epochs = max(1, epochs_rounded)  # at least 1 epoch
     print(f"Training for {epochs} epochs...")
 
     # Save the config
