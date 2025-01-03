@@ -20,7 +20,7 @@ class TrainingConfig(BaseModel):
     batch_size: int
     lr: float
     grad_clip: float
-    num_steps: int = 1000 #10**5
+    num_steps: int = 10000 #10**5
     file_path_train: str
     file_path_test: str
 
