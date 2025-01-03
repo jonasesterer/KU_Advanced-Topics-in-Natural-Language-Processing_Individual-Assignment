@@ -49,6 +49,7 @@ def main(models_folder: str, experiment_number: int):
     results = {}
 
     for model_file in models_folder_path.glob("*-model-*.pt"):
+        print(f"Evaluating model from file: {model_file}")  # Added print statement
         config_file = Path(
             str(model_file).replace("model", "config").replace(".pt", ".json")
         )
@@ -59,7 +60,7 @@ def main(models_folder: str, experiment_number: int):
         test_file = config.training.file_path_test
 
         dataset_test = SCANDataset(test_file)
-        dataloader_test = DataLoader(dataset_test, batch_size=1024, shuffle=False)
+        dataloader_test = DataLoader(dataset_test, batch_size=batch_size=config.training.batch_size, shuffle=False)
         # ? Dataset or DataLoader ?
         label = extract_label_from_path(test_file)
         results[label] = evaluate(model, dataloader_test, device)
