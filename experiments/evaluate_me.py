@@ -60,7 +60,7 @@ def main(models_folder: str, experiment_number: int):
         test_file = config.training.file_path_test
 
         dataset_test = SCANDataset(test_file)
-        dataloader_test = DataLoader(dataset_test, batch_size=config.training.batch_size, shuffle=False)
+        dataloader_test = DataLoader(dataset_test, batch_size=1024, shuffle=False)
         # ? Dataset or DataLoader ?
         label = extract_label_from_path(test_file)
         results[label] = evaluate(model, dataloader_test, device)
