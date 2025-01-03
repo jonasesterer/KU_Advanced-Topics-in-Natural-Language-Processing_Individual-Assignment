@@ -56,7 +56,7 @@ class BuilderConfigExperiment:
             self.config_model["dropout"] = 0.05
 
             self.config_training["lr"] = 7e-4
-            self.config_training["batch_size"] = 32  # 64
+            self.config_training["batch_size"] = 64  # 64
             self.config_training["grad_clip"] = 1
 
         elif (num == 2) or (num == 3):
