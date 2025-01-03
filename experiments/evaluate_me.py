@@ -60,7 +60,14 @@ def main(models_folder: str, experiment_number: int):
         test_file = config.training.file_path_test
 
         dataset_test = SCANDataset(test_file)
-        dataloader_test = DataLoader(dataset_test, batch_size=1024, shuffle=False)
+        print(f"Dataset length: {len(dataset_set)}")
+
+        # Calculate expected number of batches
+        batch_size = 1024  # Ensure this matches the batch size used
+        expected_batches = (dataset_length + batch_size - 1) // batch_size  # Ceiling division
+        print(f"Expected number of batches (batch size {batch_size}): {expected_batches}")
+
+        dataloader_test = DataLoader(dataset_test, batch_size=batch_size, shuffle=False)
         # ? Dataset or DataLoader ?
         label = extract_label_from_path(test_file)
         results[label] = evaluate(model, dataloader_test, device)
