@@ -10,6 +10,7 @@ import numpy as np
 
 from pathlib import Path
 from typing import Dict, Tuple
+from tqdm import tqdm
 
 
 def argsort(seq):
@@ -42,7 +43,8 @@ def evaluate(
     correct_tokens = 0
 
     with torch.inference_mode():
-        for batch in dataloader:
+        #for batch in dataloader:
+        for batch in tqdm(dataloader, desc="Evaluating Batches", leave=False):
             src = batch["src"]
             tgt = batch["tgt"]
 
