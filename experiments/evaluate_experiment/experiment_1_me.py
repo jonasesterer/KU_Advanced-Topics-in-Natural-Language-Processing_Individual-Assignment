@@ -72,9 +72,13 @@ def evaluate(
             # Generate predictions ? use length of test set ? 
             outputs = model.generate(input_ids, max_length=target_ids.size(1))
 
-
-            tgt_decoded = tokenizer.decode_batch(target_ids, skip_special_tokens=True)
-            prediction_decoded = tokenizer.decode_batch(outputs, skip_special_tokens=True)
+            # Decode target and prediction
+            tgt_decoded = [
+                tokenizer.decode(ids, skip_special_tokens=True) for ids in target_ids
+            ]
+            prediction_decoded = [
+                tokenizer.decode(ids, skip_special_tokens=True) for ids in outputs
+            ]
 
             for t, p in zip(tgt_decoded, prediction_decoded):
                 t_tokens = t.split()
