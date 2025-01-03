@@ -48,10 +48,6 @@ def main(models_folder: str, experiment_number: int):
 
     results = {}
 
-    model = T5ForConditionalGeneration.from_pretrained("t5-small")
-    model = model.to(device)
-    model.eval()
-
     for model_file in models_folder_path.glob("*-model-*.pt"):
         print(f"Evaluating model from file: {model_file}")  # Added print statement
         config_file = Path(
@@ -59,9 +55,7 @@ def main(models_folder: str, experiment_number: int):
         )
         config = ConfigExperiment.from_pretrained(config_file)
         # ? with or without config ? 
-        #model = load_model(model_file, device)
-        state_dict = torch.load(model_path, map_location=device, weights_only=True)
-        model.load_state_dict(state_dict)
+        model = load_model(model_file, device)
 
         test_file = config.training.file_path_test
 
