@@ -60,7 +60,8 @@ def main(models_folder: str, experiment_number: int):
         test_file = config.training.file_path_test
 
         dataset_test = SCANDataset(test_file)
-        print(f"Dataset length: {len(dataset_set)}")
+        dataset_length = len(dataset_test)
+        print(f"Dataset length: {dataset_length}")
 
         # Calculate expected number of batches
         batch_size = 1024  # Ensure this matches the batch size used
