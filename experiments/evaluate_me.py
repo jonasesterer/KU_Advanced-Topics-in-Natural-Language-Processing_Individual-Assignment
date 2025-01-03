@@ -71,7 +71,7 @@ def load_model(
     model_path: Path, device: torch.device
 ) -> T5ForConditionalGeneration: #Transformer:
     #model = Transformer(**config.model.model_dump())
-    T5ForConditionalGeneration.from_pretrained("t5-small")
+    model = T5ForConditionalGeneration.from_pretrained("t5-small")
     state_dict = torch.load(model_path, map_location=device, weights_only=True)
     model.load_state_dict(state_dict)
     model = model.to(device)
