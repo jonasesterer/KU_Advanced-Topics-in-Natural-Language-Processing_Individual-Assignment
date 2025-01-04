@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 from transformers import T5Tokenizer, T5ForConditionalGeneration
 
+import matplotlib
 import matplotlib.pyplot as plt
 from pathlib import Path
 from typing import Dict, Tuple
