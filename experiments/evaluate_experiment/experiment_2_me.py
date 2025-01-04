@@ -8,6 +8,8 @@ from typing import Dict, Tuple
 import time
 from tqdm import tqdm
 
+matplotlib.use("Agg")
+
 def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
 
