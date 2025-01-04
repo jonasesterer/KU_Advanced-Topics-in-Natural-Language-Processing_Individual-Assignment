@@ -79,7 +79,7 @@ def main():
     save_path_config = save_path / f"{num_experiment}-config-{uuid_}.json"
     config_experiment.save(save_path_config)
     print(f"Saved Experiment config at: {save_path_config}")
-    print("Max length: {config_experiment.model.max_len}")
+    print(f"Max length: {config_experiment.model.max_len}")
     
     # Train
     trained_model = train(
