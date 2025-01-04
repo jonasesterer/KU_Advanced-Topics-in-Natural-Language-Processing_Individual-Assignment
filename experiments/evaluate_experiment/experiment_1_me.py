@@ -72,10 +72,10 @@ def evaluate(
             #)
 
             # Generate predictions ? use length of test set ? 
-            print(f"target size 1: {target_ids.size(1)}")
-            print(f"target size -1: {target_ids.size(-1)}")
+            #print(f"target size 1: {target_ids.size(1)}")
+            #print(f"target size -1: {target_ids.size(-1)}")
             outputs = model.generate(input_ids, max_length=target_ids.size(1))
-            print(outputs)
+            #print(outputs)
 
             # Decode target and prediction
             tgt_decoded = [
