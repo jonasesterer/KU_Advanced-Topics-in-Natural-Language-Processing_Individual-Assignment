@@ -54,22 +54,24 @@ def main(models_folder: str, experiment_number: int):
             str(model_file).replace("model", "config").replace(".pt", ".json")
         )
         config = ConfigExperiment.from_pretrained(config_file)
-        # ? with or without config ? 
+        # Print dataset paths from config
+        print(f"Using dataset for evaluation: {config.training.file_path_test}")
+
         model = load_model(model_file, device)
 
         test_file = config.training.file_path_test
 
         dataset_test = SCANDataset(test_file)
         dataset_length = len(dataset_test)
-        print(f"Dataset length: {dataset_length}")
+        #print(f"Dataset length: {dataset_length}")
 
         # Calculate expected number of batches
         batch_size = 1024  # Ensure this matches the batch size used
         expected_batches = (dataset_length + batch_size - 1) // batch_size  # Ceiling division
-        print(f"Expected number of batches (batch size {batch_size}): {expected_batches}")
+        #print(f"Expected number of batches (batch size {batch_size}): {expected_batches}")
 
         dataloader_test = DataLoader(dataset_test, batch_size=batch_size, shuffle=False)
-        # ? Dataset or DataLoader ?
+
         label = extract_label_from_path(test_file)
         results[label] = evaluate(model, dataloader_test, device)
 
