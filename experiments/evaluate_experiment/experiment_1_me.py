@@ -7,6 +7,7 @@ from transformers import T5Tokenizer, T5ForConditionalGeneration
 
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 
 from pathlib import Path
 from typing import Dict, Tuple
@@ -56,13 +57,15 @@ def evaluate(
             #).to(device)
 
             # Tokenize source and target
+            start_time = time.time()
             input_ids = tokenizer(
                 src, padding=True, truncation=True, return_tensors="pt"
             ).input_ids.to(device)
             target_ids = tokenizer(
                 tgt, padding=True, truncation=True, return_tensors="pt"
             ).input_ids.to(device)
-
+            print(f"Time tokenizing: {time.time() - start_time}")
+            
             #prediction = model.inference_forward_greedy(  # .greedy_decode
             #    src,
             #    tokenizer.token_to_id("[SOS]"),
@@ -74,17 +77,22 @@ def evaluate(
             # Generate predictions ? use length of test set ? 
             #print(f"target size 1: {target_ids.size(1)}")
             #print(f"target size -1: {target_ids.size(-1)}")
+            start_time = time.time()
             outputs = model.generate(input_ids, max_length=target_ids.size(1))
             #print(outputs)
+            print(f"Time generating: {time.time() - start_time}")
 
             # Decode target and prediction
+            start_time = time.time()
             tgt_decoded = [
                 tokenizer.decode(ids, skip_special_tokens=True) for ids in target_ids
             ]
             prediction_decoded = [
                 tokenizer.decode(ids, skip_special_tokens=True) for ids in outputs
             ]
+            print(f"Time decoding: {time.time() - start_time}")
 
+            start_time = time.time()
             for t, p in zip(tgt_decoded, prediction_decoded):
                 t_tokens = t.split()
                 p_tokens = p.split()
@@ -93,7 +101,8 @@ def evaluate(
                 correct_tokens += sum(
                     1 for t_tok, p_tok in zip(t_tokens, p_tokens) if t_tok == p_tok
                 )
-
+            print(f"Time evaluating: {time.time() - start_time}")
+            
     token_accuracy = (correct_tokens / total_tokens) * 100
 
     return (token_accuracy,)
