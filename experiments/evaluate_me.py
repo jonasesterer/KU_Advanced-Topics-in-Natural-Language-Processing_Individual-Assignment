@@ -58,6 +58,7 @@ def main(models_folder: str, experiment_number: int):
         print(f"Using dataset for evaluation: {config.training.file_path_test}")
 
         model = load_model(model_file, device)
+        tokenizer = T5Tokenizer.from_pretrained("t5-small")
 
         test_file = config.training.file_path_test
 
@@ -73,7 +74,7 @@ def main(models_folder: str, experiment_number: int):
         dataloader_test = DataLoader(dataset_test, batch_size=batch_size, shuffle=False)
 
         label = extract_label_from_path(test_file)
-        results[label] = evaluate(model, dataloader_test, device)
+        results[label] = evaluate(model, dataloader_test, tokenizer, device)
 
     plot(results)
 
