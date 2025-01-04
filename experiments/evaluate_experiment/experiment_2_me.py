@@ -8,6 +8,14 @@ from typing import Dict, Tuple
 import time
 from tqdm import tqdm
 
+def argsort(seq):
+    return sorted(range(len(seq)), key=seq.__getitem__)
+
+def apply_sort(list, seq):
+    return [list[i] for i in seq]
+
+def extract_label_from_path(path: Path | str) -> int | float | str:
+    return 0
 
 def evaluate(
     model: T5ForConditionalGeneration,
