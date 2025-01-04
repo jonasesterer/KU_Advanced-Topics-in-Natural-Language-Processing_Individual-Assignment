@@ -79,7 +79,8 @@ def main():
     save_path_config = save_path / f"{num_experiment}-config-{uuid_}.json"
     config_experiment.save(save_path_config)
     print(f"Saved Experiment config at: {save_path_config}")
-
+    print("Max length: {config_experiment.model.max_len}")
+    
     # Train
     trained_model = train(
         model,
@@ -151,6 +152,7 @@ def train(
             input_ids = encoded_input["input_ids"].to(device)
             attention_mask = encoded_input["attention_mask"].to(device)
             labels = encoded_target["input_ids"].to(device)
+            assert input_ids.shape[0] == labels.shape[0], "Batch size mismatch!"
 
             # 3. Forward pass (T5 does the masked self-attention internally)
             outputs = model(
