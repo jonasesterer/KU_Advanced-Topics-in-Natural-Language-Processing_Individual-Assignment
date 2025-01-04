@@ -30,7 +30,7 @@ def main(models_folder: str, experiment_number: int):
                 plot,
             )
         case 2:
-            from experiments.evaluate_experiment.experiment_2_me import (
+            from experiments.evaluate_experiment.experiment_2_me_v2 import (
                 extract_label_from_path,
                 evaluate,
                 plot,
