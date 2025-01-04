@@ -269,7 +269,8 @@ def plot(
         axs[1, 1].grid(axis="y", linestyle="--", alpha=0.7)
 
         plt.tight_layout()
-        plt.show()
+        plt.savefig("2_evaluation_plot_t5_200000.png")  # Save instead of showing
+        #plt.show()
 
     # Plot results for the first model
     prepare_and_plot(model_1_results, title_suffix="(Standard)")
