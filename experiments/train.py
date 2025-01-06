@@ -18,7 +18,16 @@ from experiments.tokenizer_dataloader import SCANDataset
 
 from tqdm import tqdm
 
-
+def count_parameters(model):
+    """
+    Count the total number of parameters in the Transformer model.
+    Separate encoder and decoder parameters for detailed statistics.
+    """
+    enc_params = sum(p.numel() for p in model.encoder.parameters() if p.requires_grad)
+    dec_params = sum(p.numel() for p in model.decoder.parameters() if p.requires_grad)
+    total_params = enc_params + dec_params
+    return total_params, enc_params, dec_params
+    
 def main():
     set_seed(0)
 
@@ -71,7 +80,11 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = Transformer(**config_experiment.model.model_dump())
     model = model.to(device)
-
+    total, enc, dec = count_parameters(model)
+    print(f"  Total parameters: {total}")
+    print(f"  Encoder parameters: {enc}")
+    print(f"  Decoder parameters: {dec}")
+    
     optimizer = AdamW(model.parameters(), lr=config_experiment.training.lr)
 
     # Train
