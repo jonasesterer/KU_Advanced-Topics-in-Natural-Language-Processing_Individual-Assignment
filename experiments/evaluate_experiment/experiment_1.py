@@ -1,16 +1,5 @@
-import os
-import sys
 import matplotlib
-
-if "COLAB_GPU" in os.environ:
-    matplotlib.use("Agg")
-else:
-    matplotlib.use("TkAgg")
-    
-# Import pyplot AFTER setting the backend
 import matplotlib.pyplot as plt
-from IPython.display import Image, display
-
 import torch
 from torch.utils.data import DataLoader
 from tokenizers import Tokenizer
@@ -18,7 +7,6 @@ from models.transformer import Transformer
 import numpy as np
 from pathlib import Path
 from typing import Dict, Tuple
-
 
 def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
@@ -117,8 +105,3 @@ def plot(results: Dict[str, Tuple[float]]):
     plot_path = "Evaluation_Plot_Group_1.png"
     plt.savefig(plot_path)
     
-    # Display the plot in Colab or show it locally
-    if "COLAB_GPU" in os.environ:  # Detect Colab environment
-        display(Image(filename=plot_path))  # Display the image in Colab
-    else:
-        plt.show()  # Interactive display in local environments
