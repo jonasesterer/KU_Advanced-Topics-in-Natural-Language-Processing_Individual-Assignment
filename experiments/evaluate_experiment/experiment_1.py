@@ -120,10 +120,10 @@ def plot(results: Dict[str, Tuple[float]]):
     plt.tight_layout()
     plt.savefig("Evaluation_Plot_Group_1")
     
-    if "google.colab" in sys.modules:
-        from IPython.display import Image, display
-        display(Image(filename=plot_path))
-        print("displayImage")
+    # Display the plot in Colab or show it locally
+    if "COLAB_GPU" in os.environ:  # Detect Colab environment
+        display(Image(filename=plot_path))  # Display the image in Colab
+        print("Displayed image in Colab.")
     else:
-        plt.show()
-        print("plt.show")
+        plt.show()  # Interactive display in local environments
+        print("Displayed plot locally.")
