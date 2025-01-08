@@ -1,18 +1,20 @@
 import torch
 from torch.utils.data import DataLoader
-
 from tokenizers import Tokenizer
-
 from models.transformer import Transformer
-
 import matplotlib
 import matplotlib.pyplot as plt
-
 from pathlib import Path
 from typing import Dict, Tuple
 
-matplotlib.use("TkAgg")
-
+plt.rcParams.update({
+    'font.size': 14,       # Default font size
+    'axes.titlesize': 18,  # Title font size
+    'axes.labelsize': 18,  # X and Y label font size
+    'xtick.labelsize': 16, # X-tick label font size
+    'ytick.labelsize': 16, # Y-tick label font size
+    'legend.fontsize': 14  # Legend font size
+})
 
 def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
@@ -290,7 +292,7 @@ def plot(
         axs[1, 1].grid(axis="y", linestyle="--", alpha=0.7)
 
         plt.tight_layout()
-        plt.show()
+        #plt.show()
 
     # Plot results for the first model
     prepare_and_plot(model_1_results, title_suffix="(Standard)")
