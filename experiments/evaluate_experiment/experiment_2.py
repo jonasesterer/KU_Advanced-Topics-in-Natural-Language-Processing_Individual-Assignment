@@ -233,7 +233,10 @@ def plot(
             for length in input_lengths
         ]
 
-        fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+        if title_suffix == "Standard":
+            fig, axs = plt.subplots(1, 2, figsize=(12, 10))
+        else:
+            fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 
         # Top-left: Token-Level Accuracy by Target Length
         axs[0, 0].bar(
@@ -263,33 +266,34 @@ def plot(
         )
         axs[0, 1].grid(axis="y", linestyle="--", alpha=0.7)
 
-        # Bottom-left: Sequence-Level Accuracy by Target Length
-        axs[1, 0].bar(
-            target_lengths, target_accuracies_seq, color="lightcoral", edgecolor="black"
-        )
-        axs[1, 0].set_xticks(target_lengths)
-        axs[1, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
-        axs[1, 0].set_ylabel("Sequence-Level Accuracy (%)")
-        axs[1, 0].set_title(
-            f"Sequence-Level Accuracy by Target Length ({title_suffix})",
-            fontsize=14,
-            fontweight="bold",
-        )
-        axs[1, 0].grid(axis="y", linestyle="--", alpha=0.7)
-
-        # Bottom-right: Sequence-Level Accuracy by Input Length
-        axs[1, 1].bar(
-            input_lengths, input_accuracies_seq, color="lightcoral", edgecolor="black"
-        )
-        axs[1, 1].set_xticks(input_lengths)
-        axs[1, 1].set_xlabel("Command Length (words)")
-        axs[1, 1].set_ylabel("Sequence-Level Accuracy (%)")
-        axs[1, 1].set_title(
-            f"Sequence-Level Accuracy by Input Length ({title_suffix})",
-            fontsize=14,
-            fontweight="bold",
-        )
-        axs[1, 1].grid(axis="y", linestyle="--", alpha=0.7)
+        if title_suffix =! "Standard":
+            # Bottom-left: Sequence-Level Accuracy by Target Length
+            axs[1, 0].bar(
+                target_lengths, target_accuracies_seq, color="lightcoral", edgecolor="black"
+            )
+            axs[1, 0].set_xticks(target_lengths)
+            axs[1, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
+            axs[1, 0].set_ylabel("Sequence-Level Accuracy (%)")
+            axs[1, 0].set_title(
+                f"Sequence-Level Accuracy by Target Length ({title_suffix})",
+                fontsize=14,
+                fontweight="bold",
+            )
+            axs[1, 0].grid(axis="y", linestyle="--", alpha=0.7)
+    
+            # Bottom-right: Sequence-Level Accuracy by Input Length
+            axs[1, 1].bar(
+                input_lengths, input_accuracies_seq, color="lightcoral", edgecolor="black"
+            )
+            axs[1, 1].set_xticks(input_lengths)
+            axs[1, 1].set_xlabel("Command Length (words)")
+            axs[1, 1].set_ylabel("Sequence-Level Accuracy (%)")
+            axs[1, 1].set_title(
+                f"Sequence-Level Accuracy by Input Length ({title_suffix})",
+                fontsize=14,
+                fontweight="bold",
+            )
+            axs[1, 1].grid(axis="y", linestyle="--", alpha=0.7)
 
         plt.tight_layout()
         #plt.show()
