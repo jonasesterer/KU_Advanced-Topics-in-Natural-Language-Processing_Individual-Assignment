@@ -114,7 +114,8 @@ def plot(results: Dict[str, Tuple[float]]):
     ax1.set_axisbelow(True)
 
     plt.tight_layout()
-    plt.savefig("Evaluation_Plot_Group_1")
+    plot_path = "Evaluation_Plot_Group_1"
+    plt.savefig(plot_path)
     
     # Display the plot in Colab or show it locally
     if "COLAB_GPU" in os.environ:  # Detect Colab environment
