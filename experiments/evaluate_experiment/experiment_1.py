@@ -9,7 +9,7 @@ else:
     
 # Import pyplot AFTER setting the backend
 import matplotlib.pyplot as plt
-from IPython.display import Image
+from IPython.display import Image, display
 
 import torch
 from torch.utils.data import DataLoader
