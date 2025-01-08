@@ -111,6 +111,7 @@ def plot(results: Dict[str, Tuple[float]]):
     ax1.set_axisbelow(True)
 
     plt.tight_layout()
-    plot_path = "Evaluation_Plot_Group_1.png"
+    plot_path = "Plot_Group_1.png"
     plt.savefig(plot_path)
+    print(f"Plot saved as {plot_path}")
     
