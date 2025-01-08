@@ -6,12 +6,6 @@ from tokenizers import Tokenizer
 from models.transformer import Transformer
 
 import matplotlib
-# Dynamically set backend for Matplotlib
-import sys
-if "google.colab" in sys.modules:
-    matplotlib.use("agg")
-else:
-    matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 
 import numpy as np
@@ -115,4 +109,9 @@ def plot(results: Dict[str, Tuple[float]]):
 
     plt.tight_layout()
     plt.savefig("Evaluation_Plot_Group_1")
-    plt.show()
+    
+    if "google.colab" in sys.modules:
+        from IPython.display import Image, display
+        display(Image(filename=plot_path))
+    else:
+        plt.show()
