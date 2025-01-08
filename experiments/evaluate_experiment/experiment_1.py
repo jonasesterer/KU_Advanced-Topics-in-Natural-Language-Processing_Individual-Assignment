@@ -12,6 +12,12 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, Tuple
 
+# Dynamically set backend for Matplotlib
+import sys
+if "google.colab" in sys.modules:
+    matplotlib.use("agg")
+else:
+    matplotlib.use("TkAgg")
 
 def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
@@ -107,4 +113,5 @@ def plot(results: Dict[str, Tuple[float]]):
     ax1.set_axisbelow(True)
 
     plt.tight_layout()
+    plt.savefig("Evaluation_Plot_Group_1")
     plt.show()
