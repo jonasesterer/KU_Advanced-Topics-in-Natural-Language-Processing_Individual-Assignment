@@ -6,9 +6,11 @@ from models.transformer import Transformer
 from pathlib import Path
 from experiments.experiment import ConfigExperiment
 from transformers import set_seed
+import time
 
 
 def main(models_folder: str, experiment_number: int):
+    start_time = time.time()
     set_seed(0)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -62,8 +64,15 @@ def main(models_folder: str, experiment_number: int):
         label = extract_label_from_path(test_file)
         results[label] = evaluate(model, dataloader_test, tokenizer, device)
 
+    # Save results (Added) 
+    pickle_file_path = models_folder_path / f"evaluation_results_{experiment_number}.pkl"
+    with open(pickle_file_path, "wb") as f:
+        pickle.dump(results, f)
+    print(f"Results saved as pickle to {pickle_file_path}")
+    
     plot(results)
 
+    print(f"Time evaluation: {time.time() - start_time}")
 
 def load_model(
     model_path: Path, config: ConfigExperiment, device: torch.device
