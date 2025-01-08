@@ -69,7 +69,7 @@ def main():
 
     config_experiment.save(save_path_config)
 
-    print(f"Saved Experiment config at: {save_path_config}")
+    print(f"Saved Experiment config at: {save_path_config}\n")
 
     dataloader_train = DataLoader(
         dataset_train, batch_size=config_experiment.training.batch_size, shuffle=True
@@ -85,7 +85,7 @@ def main():
     total, enc, dec = count_parameters(model)
     print(f"  Total parameters: {total}")
     print(f"  Encoder parameters: {enc}")
-    print(f"  Decoder parameters: {dec}")
+    print(f"  Decoder parameters: {dec}\n")
     
     optimizer = AdamW(model.parameters(), lr=config_experiment.training.lr)
 
@@ -105,7 +105,7 @@ def main():
     torch.save(
         trained_model.state_dict(), save_path / f"{num_experiment}-model-{uuid}.pt"
     )
-    print(f"Time used: {time.time() - start_time}")
+    print(f"Time used: {time.time() - start_time}\n")
 
 
 def train(
@@ -173,7 +173,7 @@ def train(
                 )
 
                 print(
-                    f"Model prediction: {tokenizer.decode_batch(prediction, skip_special_tokens=True)[0]}\n"
+                    f"\n Model prediction: {tokenizer.decode_batch(prediction, skip_special_tokens=True)[0]}\n"
                 )
                 print(f"GT: {tokenizer.decode_batch(tgt.cpu().tolist())[0]}\n")
 
