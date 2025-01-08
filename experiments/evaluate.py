@@ -4,10 +4,8 @@ import matplotlib
 
 if "COLAB_GPU" in os.environ:
     matplotlib.use("Agg")
-    print("Agg")
 else:
     matplotlib.use("TkAgg")
-    print("TkAgg")
     
 # Import pyplot AFTER setting the backend
 import matplotlib.pyplot as plt
