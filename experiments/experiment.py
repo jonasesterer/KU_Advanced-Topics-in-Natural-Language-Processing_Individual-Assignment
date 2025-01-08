@@ -20,7 +20,7 @@ class TrainingConfig(BaseModel):
     batch_size: int
     lr: float
     grad_clip: float
-    num_steps: int = 10000 #10**5
+    num_steps: int = 100000 #10**5
     file_path_train: str
     file_path_test: str
 
@@ -56,7 +56,7 @@ class BuilderConfigExperiment:
             self.config_model["dropout"] = 0.05
 
             self.config_training["lr"] = 7e-4
-            self.config_training["batch_size"] = 32  # 64
+            self.config_training["batch_size"] = 64  # 64
             self.config_training["grad_clip"] = 1
 
         elif (num == 2) or (num == 3):
