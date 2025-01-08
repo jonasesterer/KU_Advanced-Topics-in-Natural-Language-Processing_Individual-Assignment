@@ -1,14 +1,16 @@
+import os
 import sys
 import matplotlib
 
-# Set the backend based on the environment
-try:
-    import google.colab  # This will raise an ImportError if not in Colab
+if "COLAB_GPU" in os.environ:
     matplotlib.use("Agg")
     print("Agg")
-except ImportError:
+else:
     matplotlib.use("TkAgg")
     print("TkAgg")
+    
+# Import pyplot AFTER setting the backend
+import matplotlib.pyplot as plt
 
 # Import pyplot AFTER setting the backend
 import matplotlib.pyplot as plt
