@@ -11,9 +11,7 @@ else:
     
 # Import pyplot AFTER setting the backend
 import matplotlib.pyplot as plt
-
-# Import pyplot AFTER setting the backend
-import matplotlib.pyplot as plt
+from IPython.display import Image
 
 import torch
 from torch.utils.data import DataLoader
