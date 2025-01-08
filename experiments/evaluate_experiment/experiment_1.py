@@ -6,6 +6,12 @@ from tokenizers import Tokenizer
 from models.transformer import Transformer
 
 import matplotlib
+# Dynamically set backend for Matplotlib
+import sys
+if "google.colab" in sys.modules:
+    matplotlib.use("agg")
+else:
+    matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 
 import numpy as np
@@ -13,12 +19,6 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, Tuple
 
-# Dynamically set backend for Matplotlib
-import sys
-if "google.colab" in sys.modules:
-    matplotlib.use("agg")
-else:
-    matplotlib.use("TkAgg")
 
 def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
