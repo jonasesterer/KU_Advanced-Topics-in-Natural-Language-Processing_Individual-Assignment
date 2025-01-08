@@ -2,11 +2,12 @@ import sys
 import matplotlib
 
 # Set the backend based on the environment
-if "google.colab" in sys.modules:
-    matplotlib.use("Agg")  # Non-interactive backend for Colab
+try:
+    import google.colab  # This will raise an ImportError if not in Colab
+    matplotlib.use("Agg")
     print("Agg")
-else:
-    matplotlib.use("TkAgg")  # GUI backend for local environments
+except ImportError:
+    matplotlib.use("TkAgg")
     print("TkAgg")
 
 # Import pyplot AFTER setting the backend
