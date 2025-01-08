@@ -243,7 +243,7 @@ def plot(
         axs[0, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
         axs[0, 0].set_ylabel("Token-Level Accuracy (%)")
         axs[0, 0].set_title(
-            f"Token-Level Accuracy by Target Length {title_suffix}",
+            f"Token-Level Accuracy by Target Length ({title_suffix})",
             fontsize=14,
             fontweight="bold",
         )
@@ -257,7 +257,7 @@ def plot(
         axs[0, 1].set_xlabel("Command Length (words)")
         axs[0, 1].set_ylabel("Token-Level Accuracy (%)")
         axs[0, 1].set_title(
-            f"Token-Level Accuracy by Input Length {title_suffix}",
+            f"Token-Level Accuracy by Input Length ({title_suffix})",
             fontsize=14,
             fontweight="bold",
         )
@@ -271,7 +271,7 @@ def plot(
         axs[1, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
         axs[1, 0].set_ylabel("Sequence-Level Accuracy (%)")
         axs[1, 0].set_title(
-            f"Sequence-Level Accuracy by Target Length {title_suffix}",
+            f"Sequence-Level Accuracy by Target Length ({title_suffix})",
             fontsize=14,
             fontweight="bold",
         )
@@ -285,7 +285,7 @@ def plot(
         axs[1, 1].set_xlabel("Command Length (words)")
         axs[1, 1].set_ylabel("Sequence-Level Accuracy (%)")
         axs[1, 1].set_title(
-            f"Sequence-Level Accuracy by Input Length {title_suffix}",
+            f"Sequence-Level Accuracy by Input Length ({title_suffix})",
             fontsize=14,
             fontweight="bold",
         )
@@ -299,7 +299,7 @@ def plot(
         print(f"Plot saved as {plot_path}")
 
     # Plot results for the first model
-    prepare_and_plot(model_1_results, title_suffix="(Standard)")
+    prepare_and_plot(model_1_results, title_suffix="Standard")
 
     # Plot results for the second model with "oracle lengths"
-    prepare_and_plot(model_2_results, title_suffix="(Oracle Lengths)")
+    prepare_and_plot(model_2_results, title_suffix="Oracle Lengths")
