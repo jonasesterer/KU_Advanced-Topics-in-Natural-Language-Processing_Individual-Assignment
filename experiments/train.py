@@ -17,6 +17,7 @@ from experiments.experiment import BuilderConfigExperiment
 from experiments.tokenizer_dataloader import SCANDataset
 
 from tqdm import tqdm
+import time
 
 def count_parameters(model):
     """
@@ -29,11 +30,12 @@ def count_parameters(model):
     return total_params, enc_params, dec_params
     
 def main():
+    start_time = time() # Added
     set_seed(0)
 
     # Setup
     num_experiment, train_file, test_file, save_path = sys.argv[1:]
-
+    print(train_file) # Added
     save_path = Path(save_path)
 
     dataset_train = SCANDataset(train_file)
@@ -103,6 +105,8 @@ def main():
     torch.save(
         trained_model.state_dict(), save_path / f"{num_experiment}-model-{uuid}.pt"
     )
+    end_time = time()
+    print(f"Time used: {end_time - start_time}")
 
 
 def train(
