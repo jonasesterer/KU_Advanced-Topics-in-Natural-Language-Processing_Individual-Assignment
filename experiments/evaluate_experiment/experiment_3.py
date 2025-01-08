@@ -1,16 +1,20 @@
 import torch
 from torch.utils.data import DataLoader
-
 from tokenizers import Tokenizer
-
 from models.transformer import Transformer
-
 import matplotlib.pyplot as plt
-
 import numpy as np
-
 from pathlib import Path
 from typing import Dict, Tuple
+
+plt.rcParams.update({
+    'font.size': 14,       # Default font size
+    'axes.titlesize': 18,  # Title font size
+    'axes.labelsize': 18,  # X and Y label font size
+    'xtick.labelsize': 16, # X-tick label font size
+    'ytick.labelsize': 16, # Y-tick label font size
+    'legend.fontsize': 14  # Legend font size
+})
 
 
 def argsort(seq):
@@ -130,4 +134,5 @@ def plot(results: Dict[str, Tuple[float, float]]):
 
     # Adjust layout
     plt.tight_layout()
-    plt.show()
+    plot_path = "Plot_Group_3"
+    plt.savefig(plot_path)
