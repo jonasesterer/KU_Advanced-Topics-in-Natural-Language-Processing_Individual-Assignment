@@ -69,7 +69,7 @@ def main(models_folder: str, experiment_number: int):
         results[label] = evaluate(model, dataloader_test, tokenizer, device)
 
     # Save results (Added) 
-    pickle_file_path = models_folder_path / f"evaluation_results_{experiment_number}_Group.pkl"
+    pickle_file_path = models_folder_path / f"Results_Group_{experiment_number}.pkl"
     with open(pickle_file_path, "wb") as f:
         pickle.dump(results, f)
     print(f"Results saved as pickle to {pickle_file_path}")
