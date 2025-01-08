@@ -1,3 +1,11 @@
+import sys
+import matplotlib
+
+if "google.colab" in sys.modules:
+    matplotlib.use("agg")
+else:
+    matplotlib.use("TkAgg")
+    
 import torch
 from experiments.tokenizer_dataloader import SCANDataset
 from tokenizers import Tokenizer
