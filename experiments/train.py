@@ -30,7 +30,7 @@ def count_parameters(model):
     return total_params, enc_params, dec_params
     
 def main():
-    start_time = time() # Added
+    start_time = time.time() # Added
     set_seed(0)
 
     # Setup
@@ -105,8 +105,7 @@ def main():
     torch.save(
         trained_model.state_dict(), save_path / f"{num_experiment}-model-{uuid}.pt"
     )
-    end_time = time()
-    print(f"Time used: {end_time - start_time}")
+    print(f"Time used: {time.time() - start_time}")
 
 
 def train(
