@@ -138,3 +138,4 @@ def plot(results: Dict[str, Tuple[float, float]]):
     plt.tight_layout()
     plot_path = "Plot_Group_3"
     plt.savefig(plot_path)
+    print(f"Plot saved as {plot_path}")
