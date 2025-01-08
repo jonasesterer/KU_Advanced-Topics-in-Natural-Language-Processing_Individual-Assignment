@@ -1,10 +1,14 @@
 import sys
 import matplotlib
 
+# Set the backend based on the environment
 if "google.colab" in sys.modules:
-    matplotlib.use("agg")
+    matplotlib.use("Agg")  # Non-interactive backend for Colab
 else:
-    matplotlib.use("TkAgg")
+    matplotlib.use("TkAgg")  # GUI backend for local environments
+
+# Import pyplot AFTER setting the backend
+import matplotlib.pyplot as plt
     
 import torch
 from experiments.tokenizer_dataloader import SCANDataset
