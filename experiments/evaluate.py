@@ -1,13 +1,4 @@
-import os
-import sys
 import matplotlib
-
-if "COLAB_GPU" in os.environ:
-    matplotlib.use("Agg")
-else:
-    matplotlib.use("TkAgg")
-    
-# Import pyplot AFTER setting the backend
 import matplotlib.pyplot as plt
     
 import torch
