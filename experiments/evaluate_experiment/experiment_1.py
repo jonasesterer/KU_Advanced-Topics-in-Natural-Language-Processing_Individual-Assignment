@@ -8,6 +8,15 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, Tuple
 
+plt.rcParams.update({
+    'font.size': 14,       # Default font size
+    'axes.titlesize': 18,  # Title font size
+    'axes.labelsize': 18,  # X and Y label font size
+    'xtick.labelsize': 16, # X-tick label font size
+    'ytick.labelsize': 16, # Y-tick label font size
+    'legend.fontsize': 14  # Legend font size
+})
+
 def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
 
@@ -94,7 +103,7 @@ def plot(results: Dict[str, Tuple[float]]):
     ax1.set_xticklabels(model_labels_with_percent)
     ax1.set_xlabel("Commands Used")
     ax1.set_ylabel("Accuracy (%)")
-    ax1.set_title("Experiment 1")
+    #ax1.set_title("Experiment 1")
 
     # Add vertical gridlines at intervals of 20
     ax1.set_yticks(range(0, 101, 20))
