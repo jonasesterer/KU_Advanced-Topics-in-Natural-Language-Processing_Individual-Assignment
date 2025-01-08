@@ -4,10 +4,8 @@ import matplotlib
 
 if "COLAB_GPU" in os.environ:
     matplotlib.use("Agg")
-    print("Agg")
 else:
     matplotlib.use("TkAgg")
-    print("TkAgg")
     
 # Import pyplot AFTER setting the backend
 import matplotlib.pyplot as plt
@@ -121,7 +119,5 @@ def plot(results: Dict[str, Tuple[float]]):
     # Display the plot in Colab or show it locally
     if "COLAB_GPU" in os.environ:  # Detect Colab environment
         display(Image(filename=plot_path))  # Display the image in Colab
-        print("Displayed image in Colab.")
     else:
         plt.show()  # Interactive display in local environments
-        print("Displayed plot locally.")
