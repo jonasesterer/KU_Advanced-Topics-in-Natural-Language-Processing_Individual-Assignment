@@ -294,6 +294,8 @@ def plot(
         plt.tight_layout()
         #plt.show()
 
+        plt.savefig(f"Plot_Group_{experiment_number}_{title_suffix}.png")
+
     # Plot results for the first model
     prepare_and_plot(model_1_results, title_suffix="(Standard)")
 
