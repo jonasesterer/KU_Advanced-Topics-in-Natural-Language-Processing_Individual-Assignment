@@ -7,6 +7,7 @@ from pathlib import Path
 from experiments.experiment import ConfigExperiment
 from transformers import set_seed
 import time
+import pickle
 
 
 def main(models_folder: str, experiment_number: int):
