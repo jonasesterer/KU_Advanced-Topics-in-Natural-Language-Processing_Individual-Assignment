@@ -4,8 +4,10 @@ import matplotlib
 # Set the backend based on the environment
 if "google.colab" in sys.modules:
     matplotlib.use("Agg")  # Non-interactive backend for Colab
+    print("Agg")
 else:
     matplotlib.use("TkAgg")  # GUI backend for local environments
+    print("TkAgg")
 
 # Import pyplot AFTER setting the backend
 import matplotlib.pyplot as plt
@@ -118,5 +120,7 @@ def plot(results: Dict[str, Tuple[float]]):
     if "google.colab" in sys.modules:
         from IPython.display import Image, display
         display(Image(filename=plot_path))
+        print("displayImage")
     else:
         plt.show()
+        print("plt.show")
