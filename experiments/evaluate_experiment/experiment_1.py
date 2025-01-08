@@ -1,15 +1,20 @@
-import torch
-from torch.utils.data import DataLoader
-
-from tokenizers import Tokenizer
-
-from models.transformer import Transformer
-
+import sys
 import matplotlib
+
+# Set the backend based on the environment
+if "google.colab" in sys.modules:
+    matplotlib.use("Agg")  # Non-interactive backend for Colab
+else:
+    matplotlib.use("TkAgg")  # GUI backend for local environments
+
+# Import pyplot AFTER setting the backend
 import matplotlib.pyplot as plt
 
+import torch
+from torch.utils.data import DataLoader
+from tokenizers import Tokenizer
+from models.transformer import Transformer
 import numpy as np
-
 from pathlib import Path
 from typing import Dict, Tuple
 
