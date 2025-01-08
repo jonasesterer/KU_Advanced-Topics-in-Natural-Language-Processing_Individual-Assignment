@@ -11,8 +11,8 @@ plt.rcParams.update({
     'font.size': 14,       # Default font size
     'axes.titlesize': 18,  # Title font size
     'axes.labelsize': 18,  # X and Y label font size
-    'xtick.labelsize': 16, # X-tick label font size
-    'ytick.labelsize': 16, # Y-tick label font size
+    'xtick.labelsize': 12, # X-tick label font size
+    'ytick.labelsize': 12, # Y-tick label font size
     'legend.fontsize': 14  # Legend font size
 })
 
@@ -184,6 +184,9 @@ def plot(
     model_1_results = values[0]
     model_2_results = values[1]
 
+    print(f"model Standard results: {model_1_results}")
+    print(f"model Oracle results: {model_2_results}")
+
     # Define a function to process results and generate plots
     def prepare_and_plot(unpacked_results, title_suffix):
         input_length_stats = unpacked_results[0]
@@ -245,11 +248,11 @@ def plot(
         axs[0, 0].set_xticks(target_lengths)
         axs[0, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
         axs[0, 0].set_ylabel("Token-Level Accuracy (%)")
-        axs[0, 0].set_title(
-            f"Token-Level Accuracy by Target Length ({title_suffix})",
-            fontsize=14,
-            fontweight="bold",
-        )
+        #axs[0, 0].set_title(
+        #    f"Token-Level Accuracy by Target Length ({title_suffix})",
+        #    fontsize=14,
+        #    fontweight="bold",
+        #)
         axs[0, 0].grid(axis="y", linestyle="--", alpha=0.7)
 
         # Top-right: Token-Level Accuracy by Input Length
@@ -259,11 +262,11 @@ def plot(
         axs[0, 1].set_xticks(input_lengths)
         axs[0, 1].set_xlabel("Command Length (words)")
         axs[0, 1].set_ylabel("Token-Level Accuracy (%)")
-        axs[0, 1].set_title(
-            f"Token-Level Accuracy by Input Length ({title_suffix})",
-            fontsize=14,
-            fontweight="bold",
-        )
+        #axs[0, 1].set_title(
+        #    f"Token-Level Accuracy by Input Length ({title_suffix})",
+        #    fontsize=14,
+        #    fontweight="bold",
+        #)
         axs[0, 1].grid(axis="y", linestyle="--", alpha=0.7)
 
         if title_suffix =! "Standard":
@@ -274,11 +277,11 @@ def plot(
             axs[1, 0].set_xticks(target_lengths)
             axs[1, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
             axs[1, 0].set_ylabel("Sequence-Level Accuracy (%)")
-            axs[1, 0].set_title(
-                f"Sequence-Level Accuracy by Target Length ({title_suffix})",
-                fontsize=14,
-                fontweight="bold",
-            )
+            #axs[1, 0].set_title(
+            #    f"Sequence-Level Accuracy by Target Length ({title_suffix})",
+            #    fontsize=14,
+            #    fontweight="bold",
+            #)
             axs[1, 0].grid(axis="y", linestyle="--", alpha=0.7)
     
             # Bottom-right: Sequence-Level Accuracy by Input Length
@@ -288,11 +291,11 @@ def plot(
             axs[1, 1].set_xticks(input_lengths)
             axs[1, 1].set_xlabel("Command Length (words)")
             axs[1, 1].set_ylabel("Sequence-Level Accuracy (%)")
-            axs[1, 1].set_title(
-                f"Sequence-Level Accuracy by Input Length ({title_suffix})",
-                fontsize=14,
-                fontweight="bold",
-            )
+            #axs[1, 1].set_title(
+            #    f"Sequence-Level Accuracy by Input Length ({title_suffix})",
+            #    fontsize=14,
+            #    fontweight="bold",
+            #)
             axs[1, 1].grid(axis="y", linestyle="--", alpha=0.7)
 
         plt.tight_layout()
