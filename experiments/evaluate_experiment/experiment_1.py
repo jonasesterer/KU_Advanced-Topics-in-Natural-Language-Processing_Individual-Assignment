@@ -5,6 +5,7 @@ from tokenizers import Tokenizer
 
 from models.transformer import Transformer
 
+import matplotlib
 import matplotlib.pyplot as plt
 
 import numpy as np
