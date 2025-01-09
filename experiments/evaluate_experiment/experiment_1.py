@@ -32,7 +32,7 @@ def extract_label_from_path(path: Path | str) -> int | float | str:
         end_idx = path.find(".txt")
         return int(path[start_idx:end_idx])
     else:
-        return 100
+        return 80
 
 
 def evaluate(
