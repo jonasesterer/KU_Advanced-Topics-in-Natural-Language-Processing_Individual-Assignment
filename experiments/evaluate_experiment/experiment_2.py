@@ -269,7 +269,7 @@ def plot(
         #)
         axs[0, 1].grid(axis="y", linestyle="--", alpha=0.7)
 
-        if title_suffix =! "Standard":
+        if title_suffix == "Oracle Lengths":
             # Bottom-left: Sequence-Level Accuracy by Target Length
             axs[1, 0].bar(
                 target_lengths, target_accuracies_seq, color="lightcoral", edgecolor="black"
