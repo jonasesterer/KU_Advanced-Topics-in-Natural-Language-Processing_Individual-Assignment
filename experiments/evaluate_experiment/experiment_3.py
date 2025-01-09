@@ -119,19 +119,21 @@ def plot(results: Dict[str, Tuple[float, float]]):
     # Token-level accuracy
     ax1.bar(x, token_accuracies, color="skyblue", edgecolor="black")
     ax1.set_xticks(x)
-    ax1.set_xticklabels(model_labels, ha="right", fontsize=10)
-    ax1.set_xlabel("Number of Composed Commands Used For Training", fontsize=12)
-    ax1.set_ylabel("Token-Level Accuracy on New Commands (%)", fontsize=12)
-    #ax1.set_title("Token-Level Accuracy", fontsize=14, fontweight="bold")
+    ax1.set_xticklabels(model_labels, ha="right")
+    ax1.set_xlabel("Number of Composed Commands Used For Training")
+    ax1.set_yticks(range(0, 101, 20))
+    ax1.set_ylabel("Token-Level Accuracy on New Commands (%)")
+    #ax1.set_title("Token-Level Accuracy", fontweight="bold")
     ax1.grid(axis="y", linestyle="--", alpha=0.7)
 
     # Sequence-level accuracy
     ax2.bar(x, sequence_accuracies, color="lightcoral", edgecolor="black")
     ax2.set_xticks(x)
-    ax2.set_xticklabels(model_labels, ha="right", fontsize=10)
-    ax2.set_xlabel("Number of Composed Commands Used For Training", fontsize=12)
-    ax2.set_ylabel("Sequence-Level Accuracy on New Commands (%)", fontsize=12)
-    #ax2.set_title("Sequence-Level Accuracy", fontsize=14, fontweight="bold")
+    ax2.set_xticklabels(model_labels, ha="right")
+    ax2.set_xlabel("Number of Composed Commands Used For Training")
+    ax2.set_yticks(range(0, 101, 20))
+    ax2.set_ylabel("Sequence-Level Accuracy on New Commands (%)")
+    #ax2.set_title("Sequence-Level Accuracy", fontweight="bold")
     ax2.grid(axis="y", linestyle="--", alpha=0.7)
 
     # Adjust layout
