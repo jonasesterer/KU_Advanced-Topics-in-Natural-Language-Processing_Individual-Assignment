@@ -121,8 +121,8 @@ def plot(results: Dict[str, Tuple[float, float]]):
     ax1.set_xticks(x)
     ax1.set_xticklabels(model_labels, ha="right", fontsize=10)
     ax1.set_xlabel("Number of Composed Commands Used For Training", fontsize=12)
-    ax1.set_ylabel("Accuracy on New Commands (%)", fontsize=12)
-    ax1.set_title("Token-Level Accuracy", fontsize=14, fontweight="bold")
+    ax1.set_ylabel("Token-Level Accuracy on New Commands (%)", fontsize=12)
+    #ax1.set_title("Token-Level Accuracy", fontsize=14, fontweight="bold")
     ax1.grid(axis="y", linestyle="--", alpha=0.7)
 
     # Sequence-level accuracy
@@ -130,8 +130,8 @@ def plot(results: Dict[str, Tuple[float, float]]):
     ax2.set_xticks(x)
     ax2.set_xticklabels(model_labels, ha="right", fontsize=10)
     ax2.set_xlabel("Number of Composed Commands Used For Training", fontsize=12)
-    ax2.set_ylabel("Accuracy on New Commands (%)", fontsize=12)
-    ax2.set_title("Sequence-Level Accuracy", fontsize=14, fontweight="bold")
+    ax2.set_ylabel("Sequence-Level Accuracy on New Commands (%)", fontsize=12)
+    #ax2.set_title("Sequence-Level Accuracy", fontsize=14, fontweight="bold")
     ax2.grid(axis="y", linestyle="--", alpha=0.7)
 
     # Adjust layout
