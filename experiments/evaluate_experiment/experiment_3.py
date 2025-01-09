@@ -114,7 +114,7 @@ def plot(results: Dict[str, Tuple[float, float]]):
     x = np.arange(len(model_labels))
 
     # Create subplots
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
 
     # Token-level accuracy
     ax1.bar(x, token_accuracies, color="skyblue", edgecolor="black")
