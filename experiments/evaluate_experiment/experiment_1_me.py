@@ -124,8 +124,8 @@ def plot(results: Dict[int, Tuple[float]]):
     plt.bar(x, accuracies, color="skyblue", edgecolor="black")
     plt.xticks(x, [f"{label}%" for label in labels])
     plt.xlabel("Commands Used")
-    plt.ylabel("Accuracy (%)")
-    plt.title("Experiment 1")
+    plt.ylabel("Token-Level Accuracy (%)")
+    #plt.title("Experiment 1")
     plt.grid(axis="y", linestyle="--", alpha=0.7)
     plt.tight_layout()
     plt.savefig("1_evaluation_plot.png")  # Save instead of showing
