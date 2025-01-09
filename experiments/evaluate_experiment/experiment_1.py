@@ -102,7 +102,7 @@ def plot(results: Dict[str, Tuple[float]]):
     ax1.set_xticks(x)
     ax1.set_xticklabels(model_labels_with_percent)
     ax1.set_xlabel("Commands Used")
-    ax1.set_ylabel("Accuracy (%)")
+    ax1.set_ylabel("Token-Level Accuracy (%)")
     #ax1.set_title("Experiment 1")
 
     # Add vertical gridlines at intervals of 20
