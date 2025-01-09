@@ -125,10 +125,14 @@ def plot(results: Dict[int, Tuple[float]]):
     plt.xticks(x, [f"{label}%" for label in labels])
     plt.xlabel("Commands Used")
     plt.ylabel("Token-Level Accuracy (%)")
+    plt.set_yticks(range(0, 101,20)
     #plt.title("Experiment 1")
-    plt.grid(axis="y", linestyle="--", alpha=0.7)
+    plt.grid(axis="y", linestyle="-", linewidth=1, alpha=0.7)
+                   
     plt.tight_layout()
-    plt.savefig("1_evaluation_plot.png")  # Save instead of showing
+    plot_path = "Plot_Individual_1_T5"
+    plt.savefig(plot_path)  # Save instead of showing
+    print(f"Plot saved as {plot_path}")
 
 def plot_old(results: Dict[str, Tuple[float]]):
     # Extract statistics
