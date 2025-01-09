@@ -94,8 +94,8 @@ def evaluate(
     token_accuracy = (correct_tokens / total_tokens) * 100
     sequence_accuracy = (correct_sequences / total_sequences) * 100
 
-    print(f"Token-Level Accuracy: {token_accuracy}")
-    print(f"Sequence-Level Accuracy: {sequence_accuracy}")
+    #print(f"Token-Level Accuracy: {token_accuracy}")
+    #print(f"Sequence-Level Accuracy: {sequence_accuracy}")
 
     return token_accuracy, sequence_accuracy
 
