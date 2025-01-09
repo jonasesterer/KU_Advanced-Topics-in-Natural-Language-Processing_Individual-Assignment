@@ -15,9 +15,10 @@ from experiments.experiment import BuilderConfigExperiment
 from experiments.tokenizer_dataloader import SCANDataset
 
 from tqdm import tqdm
-
+import time
 
 def main():
+    start_time = time.time()
     set_seed(0)
 
     # CLI: e.g. python train.py 1 train.txt test.txt out_dir
@@ -100,6 +101,7 @@ def main():
     # Option 2: Hugging Face style:
     # trained_model.save_pretrained(save_path / f"{num_experiment}-model-{uuid_}")
 
+    print(f"Total training time: {start_time-time.time()}")
     print("Done!")
 
 
