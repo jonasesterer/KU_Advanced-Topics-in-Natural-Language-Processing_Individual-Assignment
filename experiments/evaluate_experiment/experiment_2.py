@@ -250,6 +250,7 @@ def plot(
             target_lengths, target_accuracies_token, color="skyblue", edgecolor="black"
         )
         axs[0].set_xticks(target_lengths)
+        axs[0].set_yticks(range(0, 101, 20))
         axs[0].set_xlabel("Ground-Truth Action Sequence Length (words)")
         axs[0].set_ylabel("Token-Level Accuracy (%)")
         axs[0].grid(axis="y", linestyle="--", alpha=0.7)
@@ -259,6 +260,7 @@ def plot(
             input_lengths, input_accuracies_token, color="skyblue", edgecolor="black"
         )
         axs[1].set_xticks(input_lengths)
+        axs[1].set_yticks(range(0, 101, 20))
         axs[1].set_xlabel("Command Length (words)")
         axs[1].set_ylabel("Token-Level Accuracy (%)")
         axs[1].grid(axis="y", linestyle="--", alpha=0.7)
@@ -269,6 +271,7 @@ def plot(
                 target_lengths, target_accuracies_seq, color="lightcoral", edgecolor="black"
             )
             axs[2].set_xticks(target_lengths)
+            axs[2].set_yticks(range(0, 71, 10))
             axs[2].set_xlabel("Ground-Truth Action Sequence Length (words)")
             axs[2].set_ylabel("Sequence-Level Accuracy (%)")
             axs[2].grid(axis="y", linestyle="--", alpha=0.7)
@@ -278,6 +281,7 @@ def plot(
                 input_lengths, input_accuracies_seq, color="lightcoral", edgecolor="black"
             )
             axs[3].set_xticks(input_lengths)
+            axs[2].set_yticks(range(0, 71, 10))
             axs[3].set_xlabel("Command Length (words)")
             axs[3].set_ylabel("Sequence-Level Accuracy (%)")
             axs[3].grid(axis="y", linestyle="--", alpha=0.7)
