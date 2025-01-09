@@ -6,6 +6,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from pathlib import Path
 from typing import Dict, Tuple
+import numpy as np
 
 plt.rcParams.update({
     'font.size': 14,       # Default font size
