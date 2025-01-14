@@ -210,7 +210,7 @@ def train(
             batch_count += 1
 
         # End of epoch
-        if batch_count <= total_batches:
+        if batch_count < total_batches:
             avg_loss = epoch_loss / len(dataloader_train)
             print(f"Epoch {epoch + 1}, Loss: {avg_loss:.4f}")
 
