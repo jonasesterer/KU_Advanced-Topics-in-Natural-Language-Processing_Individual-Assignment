@@ -130,38 +130,6 @@ def plot(results: Dict[int, Tuple[float]]):
     plt.grid(axis="y", linestyle="-", linewidth=1, alpha=0.7)
                    
     plt.tight_layout()
-    plot_path = "Plot_Individual_1_T5"
+    plot_path = "Plot_Individual_1_T5.png"
     plt.savefig(plot_path)  # Save instead of showing
     print(f"Plot saved as {plot_path}")
-
-def plot_old(results: Dict[str, Tuple[float]]):
-    # Extract statistics
-    model_labels = list(results.keys())
-    token_accuracies = list(map(lambda x: x[0], results.values()))
-
-    # Sort
-    idxs = argsort(model_labels)
-    sorted_model_labels = apply_sort(model_labels, idxs)
-    sorted_token_accuracies = apply_sort(token_accuracies, idxs)
-
-    x = np.arange(len(sorted_model_labels))
-
-    # Add " (%)" to model labels
-    model_labels_with_percent = [str(int(label)) + "%" for label in sorted_model_labels]
-
-    fig, ax1 = plt.subplots(figsize=(12, 6))
-
-    ax1.bar(x, sorted_token_accuracies, color="skyblue", edgecolor="black")
-    ax1.set_xticks(x)
-    ax1.set_xticklabels(model_labels_with_percent)
-    ax1.set_xlabel("Commands Used")
-    ax1.set_ylabel("Accuracy (%)")
-    ax1.set_title("Experiment 1")
-
-    # Add vertical gridlines at intervals of 20
-    ax1.set_yticks(range(0, 101, 20))
-    ax1.yaxis.grid(True, linestyle="-", linewidth=1, alpha=0.7)
-    ax1.set_axisbelow(True)
-
-    plt.tight_layout()
-    plt.show()
