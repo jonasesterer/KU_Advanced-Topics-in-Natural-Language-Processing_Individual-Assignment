@@ -100,7 +100,7 @@ def main():
     save_path_config = save_path / f"{num_experiment}-config-{uuid_}.json"
     config_experiment.save(save_path_config)
     print(f"Saved Experiment config at: {save_path_config}")
-    print(f"Max length: {config_experiment.model.max_len}")
+    #print(f"Max length: {config_experiment.model.max_len}")
     
     # Train
     trained_model = train(
@@ -122,7 +122,7 @@ def main():
     # Option 2: Hugging Face style:
     # trained_model.save_pretrained(save_path / f"{num_experiment}-model-{uuid_}")
 
-    print(f"Total training time: {start_time-time.time()}")
+    print(f"Total training time: {time.time()-start_time}")
     print("Done!")
 
 
