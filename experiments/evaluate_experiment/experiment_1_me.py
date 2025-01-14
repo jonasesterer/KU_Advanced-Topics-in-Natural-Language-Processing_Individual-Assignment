@@ -121,13 +121,15 @@ def plot(results: Dict[int, Tuple[float]]):
     x = np.arange(len(labels))
 
     plt.figure(figsize=(12, 6))
-    plt.bar(x, accuracies, color="skyblue", edgecolor="black")
-    plt.xticks(x, [f"{label}%" for label in labels])
-    plt.xlabel("Commands Used")
-    plt.ylabel("Token-Level Accuracy (%)")
-    plt.set_yticks(range(0, 101,20))
-    #plt.title("Experiment 1")
-    plt.grid(axis="y", linestyle="-", linewidth=1, alpha=0.7)
+    ax = plt.gca()  # Get the current Axes object
+    ax.bar(x, accuracies, color="skyblue", edgecolor="black")
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"{label}%" for label in labels])
+    ax.set_xlabel("Commands Used")
+    ax.set_ylabel("Token-Level Accuracy (%)")
+    ax.set_yticks(range(0, 101, 20))  # Corrected line
+    #ax.set_title("Experiment 1")
+    ax.grid(axis="y", linestyle="-", linewidth=1, alpha=0.7)
                    
     plt.tight_layout()
     plot_path = "Plot_Individual_1_T5.png"
