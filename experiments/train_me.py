@@ -17,12 +17,23 @@ from experiments.tokenizer_dataloader import SCANDataset
 from tqdm import tqdm
 import time
 
+def count_parameters(model):
+    """
+    Count the total number of parameters in the Transformer model.
+    Separate encoder and decoder parameters for detailed statistics.
+    """
+    enc_params = sum(p.numel() for p in model.encoder.parameters() if p.requires_grad)
+    dec_params = sum(p.numel() for p in model.decoder.parameters() if p.requires_grad)
+    total_params = enc_params + dec_params
+    return total_params, enc_params, dec_params
+
 def main():
     start_time = time.time()
     set_seed(0)
 
     # CLI: e.g. python train.py 1 train.txt test.txt out_dir
     num_experiment, train_file, test_file, save_path = sys.argv[1:]
+    print(train_file)
     save_path = Path(save_path)
     os.makedirs(save_path, exist_ok=True)
 
@@ -53,6 +64,10 @@ def main():
     # Move model to GPU if available
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
+    total, enc, dec = count_parameters(model)
+    print(f"  Total parameters: {total}")
+    print(f"  Encoder parameters: {enc}")
+    print(f"  Decoder parameters: {dec}\n")
 
     # Use AdamW with the learning rate from your config
     optimizer = AdamW(model.parameters(), lr=config_experiment.training.lr)
