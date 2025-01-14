@@ -216,7 +216,7 @@ def train(
 
         # Optional: Evaluate or sample from the model
         #if epoch == (epochs - 1):
-        if batch_count >= total_batches
+        if batch_count >= total_batches:
             model.eval()
             with torch.inference_mode():
                 sample_batch = next(iter(dataloader_test))
