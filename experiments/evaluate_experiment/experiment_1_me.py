@@ -43,7 +43,7 @@ def extract_label_from_path(path: Path | str) -> int | float | str:
 def evaluate(
     model: T5ForConditionalGeneration,
     dataloader: DataLoader,
-    tokenizer: Tokenizer,
+    tokenizer: T5Tokenizer,
     device: torch.device,
 ) -> Tuple[float]:
 
