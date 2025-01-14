@@ -12,7 +12,7 @@ import time
 import pickle
 
 
-def main(models_folder: str, experiment_number: int):
+def main(models_folder: str, experiment_number: int, model_type: str, num_steps: int):
     start_time = time.time()
     set_seed(0)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -20,7 +20,8 @@ def main(models_folder: str, experiment_number: int):
     #path_tokenizer = str(Path(__file__).parent.parent / "custom_tokenizer.json")
     #tokenizer: Tokenizer = Tokenizer.from_file(path_tokenizer)
 
-    models_folder_path = Path(models_folder)
+    models_folder_path = Path(models_folder) / f"{model_type}_{num_steps}"
+    assert models_folder_path.exists(), f"Folder {models_folder_path} does not exist."
 
     # TODO in these we can have an expected results that is contingent on the
     # label, si
@@ -76,11 +77,11 @@ def main(models_folder: str, experiment_number: int):
 
         dataloader_test = DataLoader(dataset_test, batch_size=batch_size, shuffle=False)
 
-        label = extract_label_from_path(test_file)
+        label = f"{model_type}-{num_steps}"
         results[label] = evaluate(model, dataloader_test, tokenizer, device)
         
     # Save results (Added) 
-    pickle_file_path = models_folder_path / f"Results_Individual_{experiment_number}.pkl"
+    pickle_file_path = models_folder_path / f"Results_Individual_{experiment_number}_{model_type}_{num_steps}.pkl"
     with open(pickle_file_path, "wb") as f:
         pickle.dump(results, f)
     print(f"Results saved as pickle to {pickle_file_path}")
