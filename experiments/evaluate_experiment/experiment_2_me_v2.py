@@ -96,8 +96,16 @@ def inner_evaluate(
                     max_length=tgt_ids.size(-1),
                 )
 
-            decoded_tgt = tokenizer.batch_decode(tgt_ids, skip_special_tokens=True)
-            decoded_outputs = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+            #decoded_tgt = tokenizer.batch_decode(tgt_ids, skip_special_tokens=True)
+            decoded_tgt = [
+                tokenizer.decode(ids, skip_special_tokens=True)
+                for ids in tgt_ids
+            ]
+            #decoded_outputs = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+            decoded_outputs = [
+                tokenizer.decode(ids, skip_special_tokens=True)
+                for ids in outputs
+            ]
 
             for t_src, t_tgt, t_out in zip(src, decoded_tgt, decoded_outputs):
                 seq_correct = int(t_tgt == t_out)
