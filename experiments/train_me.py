@@ -33,6 +33,7 @@ def main():
 
     # CLI: e.g. python train.py 1 train.txt test.txt out_dir
     num_experiment, train_file, test_file, save_path, model_type, num_steps = sys.argv[1:]
+    num_steps = int(num_steps)  # Convert num_steps to an integer
     print(train_file)
     save_path = Path(save_path) / f"{model_type}_{num_steps}"
     os.makedirs(save_path, exist_ok=True)
