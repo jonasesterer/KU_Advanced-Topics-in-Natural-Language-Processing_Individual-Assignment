@@ -125,7 +125,7 @@ def plot(results: Dict[int, Tuple[float]]):
     plt.xticks(x, [f"{label}%" for label in labels])
     plt.xlabel("Commands Used")
     plt.ylabel("Token-Level Accuracy (%)")
-    plt.set_yticks(range(0, 101,20)
+    plt.set_yticks(range(0, 101,20))
     #plt.title("Experiment 1")
     plt.grid(axis="y", linestyle="-", linewidth=1, alpha=0.7)
                    
