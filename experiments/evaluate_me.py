@@ -106,13 +106,13 @@ def load_model(
 if __name__ == "__main__":
     import sys
 
-    args = sys.argv[1:]
+    #args = sys.argv[1:]
 
     #assert len(args) == 2, "Provide: <PATH-MODELS+CONFIGS> <EXPERIMENT-NUMBER>"
 
     models_folder = sys.argv[1]
     experiment_number = int(sys.argv[2])
-    model_type = args[3]
-    num_steps = int(args[4])
+    model_type = sys.argv[3]
+    num_steps = int(sys.argv[4])
 
     main(models_folder, experiment_number)
