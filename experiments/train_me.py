@@ -9,7 +9,7 @@ from uuid import uuid4
 from typing import Union
 
 # ↓↓↓ NEW: import T5
-from transformers import set_seed, T5Tokenizer, T5ForConditionalGeneration
+from transformers import set_seed, T5Tokenizer, T5ForConditionalGeneration, T5Config
 
 from experiments.experiment import BuilderConfigExperiment
 from experiments.tokenizer_dataloader import SCANDataset
@@ -32,9 +32,9 @@ def main():
     set_seed(0)
 
     # CLI: e.g. python train.py 1 train.txt test.txt out_dir
-    num_experiment, train_file, test_file, save_path = sys.argv[1:]
+    num_experiment, train_file, test_file, save_path, model_type, num_steps = sys.argv[1:]
     print(train_file)
-    save_path = Path(save_path)
+    save_path = Path(save_path) / f"{model_type}_{num_steps}"
     os.makedirs(save_path, exist_ok=True)
 
     # Prepare dataset
@@ -54,12 +54,18 @@ def main():
         .set_path_test(os.path.abspath(test_file))
         .build()
     )
+    config_experiment.training.num_steps = num_steps  # Set num_steps dynamically
 
     # ↓↓↓ NEW: Instead of your custom tokenizer.json, use T5’s tokenizer
     tokenizer = T5Tokenizer.from_pretrained("t5-small")
 
     # ↓↓↓ NEW: Initialize T5 model
-    model = T5ForConditionalGeneration.from_pretrained("t5-small")
+    # Select model type
+    if model_type == "pretrained":
+        model = T5ForConditionalGeneration.from_pretrained("t5-small")
+    else:
+        config = T5Config.from_pretrained("t5-small")
+        model = T5ForConditionalGeneration(config)
 
     # Move model to GPU if available
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -97,7 +103,7 @@ def main():
 
     # Save the config
     uuid_ = uuid4()
-    save_path_config = save_path / f"{num_experiment}-config-{uuid_}.json"
+    save_path_config = save_path / f"{num_experiment}-{model_type}-{num_steps}-config-{uuid_}.json"
     config_experiment.save(save_path_config)
     print(f"Saved Experiment config at: {save_path_config}")
     #print(f"Max length: {config_experiment.model.max_len}")
@@ -118,9 +124,9 @@ def main():
 
     # Save
     # Option 1: Standard PyTorch state_dict:
-    torch.save(trained_model.state_dict(), save_path / f"{num_experiment}-model-{uuid_}.pt")
+    torch.save(trained_model.state_dict(), save_path / f"{num_experiment}-{model_type}-{num_steps}-model-{uuid_}.pt")
     # Option 2: Hugging Face style:
-    # trained_model.save_pretrained(save_path / f"{num_experiment}-model-{uuid_}")
+    # trained_model.save_pretrained(save_path / f"{num_experiment}-{model_type}-{num_steps}-model-{uuid_}")
 
     print(f"Total training time: {time.time()-start_time}")
     print("Done!")
