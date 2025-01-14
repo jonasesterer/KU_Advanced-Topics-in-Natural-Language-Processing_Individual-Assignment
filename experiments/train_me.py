@@ -160,6 +160,7 @@ def train(
                 if batch_id > 0:
                     avg_loss = epoch_loss / batch_id
                     print(f"Partial Epoch {epoch + 1} ({batch_id}/{len(dataloader_train)} batches), Loss: {avg_loss:.4f}")
+                    batch_count += 1
                 break  # Stop once the desired number of batches is reached
 
             src_texts = batch["src"]  # list of strings
