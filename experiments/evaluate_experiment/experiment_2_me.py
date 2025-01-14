@@ -9,7 +9,14 @@ from typing import Dict, Tuple
 import time
 from tqdm import tqdm
 
-matplotlib.use("Agg")
+plt.rcParams.update({
+    'font.size': 14,       # Default font size
+    'axes.titlesize': 18,  # Title font size
+    'axes.labelsize': 18,  # X and Y label font size
+    'xtick.labelsize': 12, # X-tick label font size
+    'ytick.labelsize': 12, # Y-tick label font size
+    'legend.fontsize': 14  # Legend font size
+})
 
 def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
