@@ -1,13 +1,20 @@
 import torch
 from torch.utils.data import DataLoader
 from transformers import T5Tokenizer, T5ForConditionalGeneration
-
 import matplotlib
 import matplotlib.pyplot as plt
 from pathlib import Path
 from typing import Dict, Tuple
+import numpy as np
 
-matplotlib.use("Agg")
+plt.rcParams.update({
+    'font.size': 14,       # Default font size
+    'axes.titlesize': 18,  # Title font size
+    'axes.labelsize': 18,  # X and Y label font size
+    'xtick.labelsize': 12, # X-tick label font size
+    'ytick.labelsize': 12, # Y-tick label font size
+    'legend.fontsize': 14  # Legend font size
+})
 
 def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
@@ -210,67 +217,59 @@ def plot(
             for length in input_lengths
         ]
 
-        fig, axs = plt.subplots(2, 2, figsize=(12, 10))
+        # Choose the subplot layout
+        if title_suffix == "Standard":
+            fig, axs = plt.subplots(1, 2, figsize=(12, 6))  # 1x2 layout
+        else:
+            fig, axs = plt.subplots(2, 2, figsize=(12, 10))  # 2x2 layout
 
-        # Top-left: Token-Level Accuracy by Target Length
-        axs[0, 0].bar(
+        axs = np.ravel(axs)  # Flatten axs for consistent 1D indexing
+
+        # Plot 1: Token-Level Accuracy by Target Length
+        axs[0].bar(
             target_lengths, target_accuracies_token, color="skyblue", edgecolor="black"
         )
-        axs[0, 0].set_xticks(target_lengths)
-        axs[0, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
-        axs[0, 0].set_ylabel("Token-Level Accuracy (%)")
-        axs[0, 0].set_title(
-            f"Token-Level Accuracy by Target Length {title_suffix}",
-            fontsize=14,
-            fontweight="bold",
-        )
-        axs[0, 0].grid(axis="y", linestyle="--", alpha=0.7)
-
-        # Top-right: Token-Level Accuracy by Input Length
-        axs[0, 1].bar(
+        axs[0].set_xticks(target_lengths)
+        axs[0].set_yticks(range(0, 101, 20))
+        axs[0].set_xlabel("Ground-Truth Action Sequence Length (words)")
+        axs[0].set_ylabel("Token-Level Accuracy (%)")
+        axs[0].grid(axis="y", linestyle="--", alpha=0.7)
+    
+        # Plot 2: Token-Level Accuracy by Input Length
+        axs[1].bar(
             input_lengths, input_accuracies_token, color="skyblue", edgecolor="black"
         )
-        axs[0, 1].set_xticks(input_lengths)
-        axs[0, 1].set_xlabel("Command Length (words)")
-        axs[0, 1].set_ylabel("Token-Level Accuracy (%)")
-        axs[0, 1].set_title(
-            f"Token-Level Accuracy by Input Length {title_suffix}",
-            fontsize=14,
-            fontweight="bold",
-        )
-        axs[0, 1].grid(axis="y", linestyle="--", alpha=0.7)
-
-        # Bottom-left: Sequence-Level Accuracy by Target Length
-        axs[1, 0].bar(
-            target_lengths, target_accuracies_seq, color="lightcoral", edgecolor="black"
-        )
-        axs[1, 0].set_xticks(target_lengths)
-        axs[1, 0].set_xlabel("Ground-Truth Action Sequence Length (words)")
-        axs[1, 0].set_ylabel("Sequence-Level Accuracy (%)")
-        axs[1, 0].set_title(
-            f"Sequence-Level Accuracy by Target Length {title_suffix}",
-            fontsize=14,
-            fontweight="bold",
-        )
-        axs[1, 0].grid(axis="y", linestyle="--", alpha=0.7)
-
-        # Bottom-right: Sequence-Level Accuracy by Input Length
-        axs[1, 1].bar(
-            input_lengths, input_accuracies_seq, color="lightcoral", edgecolor="black"
-        )
-        axs[1, 1].set_xticks(input_lengths)
-        axs[1, 1].set_xlabel("Command Length (words)")
-        axs[1, 1].set_ylabel("Sequence-Level Accuracy (%)")
-        axs[1, 1].set_title(
-            f"Sequence-Level Accuracy by Input Length {title_suffix}",
-            fontsize=14,
-            fontweight="bold",
-        )
-        axs[1, 1].grid(axis="y", linestyle="--", alpha=0.7)
+        axs[1].set_xticks(input_lengths)
+        axs[1].set_yticks(range(0, 101, 20))
+        axs[1].set_xlabel("Command Length (words)")
+        axs[1].set_ylabel("Token-Level Accuracy (%)")
+        axs[1].grid(axis="y", linestyle="--", alpha=0.7)
+    
+        if title_suffix == "Oracle Lengths":
+            # Plot 3: Sequence-Level Accuracy by Target Length
+            axs[2].bar(
+                target_lengths, target_accuracies_seq, color="lightcoral", edgecolor="black"
+            )
+            axs[2].set_xticks(target_lengths)
+            axs[2].set_yticks(range(0, 71, 10))
+            axs[2].set_xlabel("Ground-Truth Action Sequence Length (words)")
+            axs[2].set_ylabel("Sequence-Level Accuracy (%)")
+            axs[2].grid(axis="y", linestyle="--", alpha=0.7)
+    
+            # Plot 4: Sequence-Level Accuracy by Input Length
+            axs[3].bar(
+                input_lengths, input_accuracies_seq, color="lightcoral", edgecolor="black"
+            )
+            axs[3].set_xticks(input_lengths)
+            axs[2].set_yticks(range(0, 71, 10))
+            axs[3].set_xlabel("Command Length (words)")
+            axs[3].set_ylabel("Sequence-Level Accuracy (%)")
+            axs[3].grid(axis="y", linestyle="--", alpha=0.7)
 
         plt.tight_layout()
-        plt.savefig("2_evaluation_plot_t5_200000.png")  # Save instead of showing
-        #plt.show()
+        plot_path = f"Plot_Individual_2_T5_{title_suffix}.png"
+        plt.savefig(plot_path)
+        print(f"Plot saved as {plot_path}")
 
     # Plot results for the first model
     prepare_and_plot(model_1_results, title_suffix="(Standard)")
