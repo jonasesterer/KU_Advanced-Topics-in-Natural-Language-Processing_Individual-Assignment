@@ -91,9 +91,9 @@ def main():
     #print(f"Training for {epochs} epochs...")
 
     samples_to_present = config_experiment.training.num_steps
-    total_batch = (samples_to_present + config_experiment.training.batch_size - 1) // config_experiment.training.batch_size
+    total_batches = (samples_to_present + config_experiment.training.batch_size - 1) // config_experiment.training.batch_size
     print(f"Training will present {samples_to_present} samples in total...")
-    print(f"Total batches to present: {total_batch}")
+    print(f"Total batches to present: {total_batches}")
 
     # Save the config
     uuid_ = uuid4()
@@ -112,7 +112,7 @@ def main():
         optimizer,
         grad_clip=config_experiment.training.grad_clip,
         #epochs=epochs,
-        total_batches=total_batch
+        total_batches=total_batches,
         max_length=config_experiment.model.max_len,
     )
 
