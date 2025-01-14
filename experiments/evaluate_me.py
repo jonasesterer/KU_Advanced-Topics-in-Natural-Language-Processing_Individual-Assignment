@@ -115,4 +115,4 @@ if __name__ == "__main__":
     model_type = sys.argv[3]
     num_steps = int(sys.argv[4])
 
-    main(models_folder, experiment_number)
+    main(models_folder, experiment_number, model_type, num_steps)
