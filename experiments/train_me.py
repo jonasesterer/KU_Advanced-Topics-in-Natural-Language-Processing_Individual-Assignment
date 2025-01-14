@@ -88,7 +88,12 @@ def main():
     steps_per_epoch = len(dataloader_train)
     epochs_rounded = int(config_experiment.training.num_steps // len(dataset_train))
     epochs = max(1, epochs_rounded)  # at least 1 epoch
-    print(f"Training for {epochs} epochs...")
+    #print(f"Training for {epochs} epochs...")
+
+    samples_to_present = config_experiment.training.num_steps
+    total_batches = (samples_to_present + config_experiment.training.batch_size - 1) // config_experiment.training.batch_size
+    print(f"Training will present {samples_to_present} samples in total...")
+    print(f"Total batches to present: {total_batches}")
 
     # Save the config
     uuid_ = uuid4()
@@ -106,7 +111,8 @@ def main():
         dataloader_test,
         optimizer,
         grad_clip=config_experiment.training.grad_clip,
-        epochs=epochs,
+        #epochs=epochs,
+        total_batches=total_batches
         max_length=config_experiment.model.max_len,
     )
 
@@ -128,7 +134,8 @@ def train(
     dataloader_test: DataLoader,
     optimizer: AdamW,
     grad_clip: float,
-    epochs: int,
+    #epochs: int,
+    total_batches: int,
     max_length: int,
 ):
     """
@@ -137,12 +144,23 @@ def train(
     """
     model.train()
 
-    for epoch in range(epochs):
+    #for epoch in range(epochs):
     #for epoch in tqdm(range(epochs), desc="Training", unit="epoch"):
 
+    # Iterate through the dataloader repeatedly to present the total number of batches
+    epoch = 0
+    batch_count = 0
+    while batch_count < total_batches:
+        
         epoch_loss = 0.0
         #for batch in dataloader_train:
-        for batch in tqdm(dataloader_train, desc=f"Epoch {epoch+1}", leave=False):
+        for batch_id, batch in tqdm(enumerate(dataloader_train), desc=f"Epoch {epoch+1}", leave=False):
+            if batch_count >= total_batches:
+                print("Stopped between epochs")
+                if batch_id > 0:
+                    avg_loss = epoch_loss / batch_id
+                    print(f"Partial Epoch {epoch + 1} ({batch_id}/{len(dataloader_train)} batches), Loss: {avg_loss:.4f}")
+                break  # Stop once the desired number of batches is reached
 
             src_texts = batch["src"]  # list of strings
             tgt_texts = batch["tgt"]  # list of strings
@@ -189,13 +207,16 @@ def train(
             optimizer.step()
 
             epoch_loss += loss.item()
+            batch_count += 1
 
         # End of epoch
-        avg_loss = epoch_loss / len(dataloader_train)
-        print(f"Epoch {epoch + 1}/{epochs}, Loss: {avg_loss:.4f}")
+        if batch_count <= total_batches:
+            avg_loss = epoch_loss / len(dataloader_train)
+            print(f"Epoch {epoch + 1}, Loss: {avg_loss:.4f}")
 
         # Optional: Evaluate or sample from the model
-        if epoch == (epochs - 1):
+        #if epoch == (epochs - 1):
+        if batch_count >= total_batches
             model.eval()
             with torch.inference_mode():
                 sample_batch = next(iter(dataloader_test))
