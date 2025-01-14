@@ -153,10 +153,14 @@ def plot(
     plt.plot(target_lengths, target_accuracies, label="Target Length Accuracy")
     plt.xlabel("Sequence Length")
     plt.ylabel("Accuracy (%)")
-    plt.title(f"Experiment 2 Accuracy {'(Oracle)' if oracle else ''}")
+    #plt.title(f"Experiment 2 Accuracy {'(Oracle)' if oracle else ''}")
     plt.legend()
-    plt.grid()
-    plt.show()
+    plt.grid(axis="y", linestyle="-", linewidth=1, alpha=0.7)
+                   
+    plt.tight_layout()
+    plot_path = "Plot_Individual_2_T5"
+    plt.savefig(plot_path)  # Save instead of showing
+    print(f"Plot saved as {plot_path}")
 
 
 def main():
