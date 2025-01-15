@@ -77,7 +77,7 @@ def main(models_folder: str, experiment_number: int, model_type: str, num_steps:
 
         dataloader_test = DataLoader(dataset_test, batch_size=batch_size, shuffle=False)
 
-        label = f"{model_type}-{num_steps}"
+        label = extract_label_from_path(test_file)
         results[label] = evaluate(model, dataloader_test, tokenizer, device)
         
     # Save results (Added) 
