@@ -87,7 +87,7 @@ def main(models_folder: str, experiment_number: int, model_type: str, num_steps:
         pickle.dump(results, f)
     print(f"Results saved as pickle to {pickle_file_path}")
 
-    plot(results)
+    plot(results, model_type, num_steps)
 
     print(f"Evaluation time: {time.time() - start_time}")
 
