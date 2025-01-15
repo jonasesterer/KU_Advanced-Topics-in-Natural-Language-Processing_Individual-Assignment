@@ -56,6 +56,7 @@ def main():
         .build()
     )
     config_experiment.training.num_steps = num_steps  # Set num_steps dynamically
+    config_experiment.training.lr = 2e-4
 
     # ↓↓↓ NEW: Instead of your custom tokenizer.json, use T5’s tokenizer
     tokenizer = T5Tokenizer.from_pretrained("t5-small")
