@@ -95,6 +95,18 @@ def inner_evaluate(
                         min_length=length.item(),  # Enforce minimum length
                         early_stopping=False,  # Disable early stopping
                     )
+                        # Ensure generated sequence matches the oracle length
+                    generated = generated[:, :length.item()]  # Truncate if too long
+                    if generated.size(1) < length.item():     # Pad if too short
+                        pad_size = length.item() - generated.size(1)
+                        pad_tensor = torch.full(
+                            (generated.size(0), pad_size),
+                            pad_token_id,
+                            device=generated.device,
+                            dtype=generated.dtype,
+                        )
+                        generated = torch.cat((generated, pad_tensor), dim=1)
+            
                     outputs.append(generated)
     
                 # Concatenate outputs to match batch format
