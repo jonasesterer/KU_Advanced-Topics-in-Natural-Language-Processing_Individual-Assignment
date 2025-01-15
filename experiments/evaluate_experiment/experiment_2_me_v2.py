@@ -187,7 +187,7 @@ def plot(
             ],
         ],
     ],
-):
+model_type: str, num_steps: int):
     assert (
         len(results.keys()) == 1
     ), "For experiment 2, we expect to only evaluate one model"
@@ -296,7 +296,7 @@ def plot(
             axs[3].grid(axis="y", linestyle="--", alpha=0.7)
 
         plt.tight_layout()
-        plot_path = f"Plot_Individual_2_T5_{title_suffix}.png"
+        plot_path = f"Plot_Individual_2_{model_type}_{num_steps}_{title_suffix}.png"
         plt.savefig(plot_path)
         print(f"Plot saved as {plot_path}")
 
