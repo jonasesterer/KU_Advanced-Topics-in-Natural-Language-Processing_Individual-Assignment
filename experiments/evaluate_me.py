@@ -79,6 +79,7 @@ def main(models_folder: str, experiment_number: int, model_type: str, num_steps:
 
         label = extract_label_from_path(test_file)
         results[label] = evaluate(model, dataloader_test, tokenizer, device)
+        print(results)
         
     # Save results (Added) 
     pickle_file_path = models_folder_path / f"Results_Individual_{experiment_number}_{model_type}_{num_steps}.pkl"
