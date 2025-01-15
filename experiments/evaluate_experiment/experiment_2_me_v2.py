@@ -86,10 +86,19 @@ def inner_evaluate(
             fixed_lengths = eos_positions + 1
 
             if oracle:
-                outputs = model.generate(
-                    input_ids=encoded_src["input_ids"],
-                    max_length=fixed_lengths.max().item(),
-                )
+                outputs = []
+                for input_ids, length in zip(encoded_src["input_ids"], fixed_lengths):
+                    # Generate sequence for each input with forced length enforcement
+                    generated = model.generate(
+                        input_ids=input_ids.unsqueeze(0),  # Add batch dimension
+                        max_length=length.item(),  # Maximum length
+                        min_length=length.item(),  # Enforce minimum length
+                        early_stopping=False,  # Disable early stopping
+                    )
+                    outputs.append(generated)
+    
+                # Concatenate outputs to match batch format
+                outputs = torch.cat(outputs, dim=0)
             else:
                 outputs = model.generate(
                     input_ids=encoded_src["input_ids"],
