@@ -82,7 +82,7 @@ def main(models_folder: str, experiment_number: int, model_type: str, num_steps:
         print(results)
         
     # Save results (Added) 
-    pickle_file_path = models_folder_path / f"Results_Individual_{experiment_number}_{model_type}_{num_steps}.pkl"
+    pickle_file_path = f"Results_Individual_{experiment_number}_{model_type}_{num_steps}.pkl"
     with open(pickle_file_path, "wb") as f:
         pickle.dump(results, f)
     print(f"Results saved as pickle to {pickle_file_path}")
