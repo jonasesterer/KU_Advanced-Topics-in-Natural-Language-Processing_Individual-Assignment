@@ -114,7 +114,7 @@ def evaluate(
 
     return (token_accuracy,)
 
-def plot(results: Dict[int, Tuple[float]]):
+def plot(results: Dict[int, Tuple[float]], model_type: str, num_steps: int):
     labels = sorted(results.keys())
     accuracies = [results[label][0] for label in labels]
 
@@ -132,6 +132,6 @@ def plot(results: Dict[int, Tuple[float]]):
     ax.grid(axis="y", linestyle="-", linewidth=1, alpha=0.7)
                    
     plt.tight_layout()
-    plot_path = "Plot_Individual_1_T5.png"
+    plot_path = "Plot_Individual_1_{model_type}_{num_steps}.png"
     plt.savefig(plot_path)  # Save instead of showing
     print(f"Plot saved as {plot_path}")
