@@ -28,3 +28,12 @@ for model_type in "${models[@]}"; do
 done
 
 echo "Finished evaluation."
+
+echo "Aggregating results."
+
+python3 experiments/aggregate_and_plot_experiment_1.py
+python3 experiments/aggregate_and_plot_experiment_2.py
+
+echo "Aggregation finished."
+echo "Finished."
+
