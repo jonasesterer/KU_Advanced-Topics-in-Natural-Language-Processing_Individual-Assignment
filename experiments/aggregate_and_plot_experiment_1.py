@@ -81,7 +81,7 @@ def plot_experiment_1_results(results: dict):
     # Save agrgegated results
     aggregated_path = "Results_Aggregated_Experiment_1.pkl"
     with open(aggregated_path, "wb") as f:
-        pickle.dump(aggregated_results, f)
+        pickle.dump(results, f)
     print(f"Aggregated results saved as {aggregated_path}")
 
 if __name__ == "__main__":
