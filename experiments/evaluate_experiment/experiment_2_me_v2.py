@@ -69,7 +69,7 @@ def inner_evaluate(
     pad_token_id = tokenizer.pad_token_id
 
     with torch.inference_mode():
-        for batch in dataloader:
+        for batch_idx, batch in enumerate(dataloader):
             src = batch["src"]
             tgt = batch["tgt"]
 
