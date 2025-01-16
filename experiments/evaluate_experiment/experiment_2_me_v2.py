@@ -84,7 +84,7 @@ def inner_evaluate(
 
             eos_positions = (tgt_ids == eos_token_id).float().argmax(dim=1)
             fixed_lengths = eos_positions + 1
-
+            print(fixed_lengths)
             if oracle:
                 outputs = []
                 for input_ids, length in zip(encoded_src["input_ids"], fixed_lengths):
@@ -95,7 +95,7 @@ def inner_evaluate(
                         min_length=length.item(),  # Enforce minimum length
                         early_stopping=False,  # Disable early stopping
                     )
-            
+                    print(f"Expected length: {length.item()}, Generated length: {generated.size(1)}")
                     # Ensure generated sequence matches the oracle length
                     current_length = generated.size(1)
                     if current_length > length.item():  # Truncate if too long
