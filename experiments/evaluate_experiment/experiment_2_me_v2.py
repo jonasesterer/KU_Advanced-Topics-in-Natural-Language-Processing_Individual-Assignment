@@ -91,14 +91,17 @@ def inner_evaluate(
                     # Generate sequence for each input with forced length enforcement
                     generated = model.generate(
                         input_ids=input_ids.unsqueeze(0),  # Add batch dimension
-                        max_length=length.item(),  # Maximum length
+                        max_length=length.item(),  # Enforce maximum length
                         min_length=length.item(),  # Enforce minimum length
                         early_stopping=False,  # Disable early stopping
                     )
-                        # Ensure generated sequence matches the oracle length
-                    generated = generated[:, :length.item()]  # Truncate if too long
-                    if generated.size(1) < length.item():     # Pad if too short
-                        pad_size = length.item() - generated.size(1)
+            
+                    # Ensure generated sequence matches the oracle length
+                    current_length = generated.size(1)
+                    if current_length > length.item():  # Truncate if too long
+                        generated = generated[:, :length.item()]
+                    elif current_length < length.item():  # Pad if too short
+                        pad_size = length.item() - current_length
                         pad_tensor = torch.full(
                             (generated.size(0), pad_size),
                             pad_token_id,
@@ -107,8 +110,14 @@ def inner_evaluate(
                         )
                         generated = torch.cat((generated, pad_tensor), dim=1)
             
+                    # Confirm the length of the sequence matches the oracle length
+                    assert generated.size(1) == length.item(), (
+                        f"Generated sequence length ({generated.size(1)}) does not match "
+                        f"the expected length ({length.item()})."
+                    )
+            
                     outputs.append(generated)
-    
+            
                 # Concatenate outputs to match batch format
                 outputs = torch.cat(outputs, dim=0)
             else:
