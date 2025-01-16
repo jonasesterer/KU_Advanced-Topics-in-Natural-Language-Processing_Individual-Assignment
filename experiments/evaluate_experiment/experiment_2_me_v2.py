@@ -84,7 +84,8 @@ def inner_evaluate(
 
             eos_positions = (tgt_ids == eos_token_id).float().argmax(dim=1)
             fixed_lengths = eos_positions + 1
-            print(f"fixed lengths: {fixed_lengths}")
+            print(f"Batch {batch_idx} - Fixed lengths: {fixed_lengths}")
+    
             if oracle:
                 outputs = []
                 for i, (input_ids, length) in enumerate(zip(encoded_src["input_ids"], fixed_lengths)):
@@ -95,7 +96,8 @@ def inner_evaluate(
                         min_length=length.item(),  # Enforce minimum length
                         early_stopping=False,  # Disable early stopping
                     )
-            
+                    print(f"Batch {batch_idx}, Index {i} - Generated shape before adjustment: {generated.shape}")
+    
                     # Adjust generated sequence to match oracle length
                     current_length = generated.size(1)
                     if current_length > length.item():  # Truncate if too long
@@ -109,32 +111,40 @@ def inner_evaluate(
                             dtype=generated.dtype,
                         )
                         generated = torch.cat((generated, pad_tensor), dim=1)
-            
+    
+                    # Log final shape
+                    print(
+                        f"Batch {batch_idx}, Index {i} - Final generated shape: {generated.shape}, "
+                        f"Expected length: {length.item()}"
+                    )
+    
                     # Validate length
                     if generated.size(1) != length.item():
-                        print(f"Error at index {i}: Expected {length.item()}, got {generated.size(1)}")
-                        print(f"Generated: {generated}")
+                        print(f"Error at Batch {batch_idx}, Index {i}: Expected {length.item()}, got {generated.size(1)}")
                         raise ValueError(
                             f"Generated sequence length ({generated.size(1)}) does not match "
                             f"expected oracle length ({length.item()})."
                         )
-            
+    
                     outputs.append(generated)
-            
-                # Final validation before concatenation
+    
+                # Validate all output lengths before concatenation
                 output_lengths = [output.size(1) for output in outputs]
                 unique_lengths = set(output_lengths)
                 if len(unique_lengths) > 1:
-                    print(f"Inconsistent lengths detected: {unique_lengths}")
+                    print(f"Inconsistent lengths detected in Batch {batch_idx}: {unique_lengths}")
                     raise RuntimeError("Inconsistent tensor lengths in outputs.")
-            
+    
                 # Concatenate outputs
                 outputs = torch.cat(outputs, dim=0)
+                print(f"Batch {batch_idx} - Final concatenated output shape: {outputs.shape}")
+    
             else:
                 outputs = model.generate(
                     input_ids=encoded_src["input_ids"],
                     max_length=tgt_ids.size(-1),
                 )
+                print(f"Batch {batch_idx} - Non-oracle generated shape: {outputs.shape}")
 
             #decoded_tgt = tokenizer.batch_decode(tgt_ids, skip_special_tokens=True)
             decoded_tgt = [
