@@ -96,7 +96,7 @@ def inner_evaluate(
                         early_stopping=False,  # Disable early stopping
                     )
             
-                    # Ensure generated sequence matches the oracle length
+                    # Adjust generated sequence to match oracle length
                     current_length = generated.size(1)
                     if current_length > length.item():  # Truncate if too long
                         generated = generated[:, :length.item()]
@@ -110,10 +110,9 @@ def inner_evaluate(
                         )
                         generated = torch.cat((generated, pad_tensor), dim=1)
             
-                    # Debugging: Check the length of the generated sequence
+                    # Validate length
                     if generated.size(1) != length.item():
-                        print(f"Error: Expected length {length.item()}, but got {generated.size(1)}.")
-                        print(f"Input {i}: {input_ids}")
+                        print(f"Error at index {i}: Expected {length.item()}, got {generated.size(1)}")
                         print(f"Generated: {generated}")
                         raise ValueError(
                             f"Generated sequence length ({generated.size(1)}) does not match "
@@ -122,13 +121,14 @@ def inner_evaluate(
             
                     outputs.append(generated)
             
-                # Ensure all sequences are of the same length before concatenating
+                # Final validation before concatenation
                 output_lengths = [output.size(1) for output in outputs]
-                if len(set(output_lengths)) != 1:
-                    print(f"Inconsistent lengths detected in outputs: {output_lengths}")
+                unique_lengths = set(output_lengths)
+                if len(unique_lengths) > 1:
+                    print(f"Inconsistent lengths detected: {unique_lengths}")
                     raise RuntimeError("Inconsistent tensor lengths in outputs.")
             
-                # Concatenate outputs to match batch format
+                # Concatenate outputs
                 outputs = torch.cat(outputs, dim=0)
             else:
                 outputs = model.generate(
