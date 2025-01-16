@@ -84,10 +84,10 @@ def inner_evaluate(
 
             eos_positions = (tgt_ids == eos_token_id).float().argmax(dim=1)
             fixed_lengths = eos_positions + 1
-            print(fixed_lengths)
+            print(f"fixed lengths: {fixed_lengths}")
             if oracle:
                 outputs = []
-                for input_ids, length in zip(encoded_src["input_ids"], fixed_lengths):
+                for i, (input_ids, length) in enumerate(zip(encoded_src["input_ids"], fixed_lengths)):
                     # Generate sequence for each input with forced length enforcement
                     generated = model.generate(
                         input_ids=input_ids.unsqueeze(0),  # Add batch dimension
@@ -95,7 +95,7 @@ def inner_evaluate(
                         min_length=length.item(),  # Enforce minimum length
                         early_stopping=False,  # Disable early stopping
                     )
-                    print(f"Expected length: {length.item()}, Generated length: {generated.size(1)}")
+            
                     # Ensure generated sequence matches the oracle length
                     current_length = generated.size(1)
                     if current_length > length.item():  # Truncate if too long
@@ -110,13 +110,23 @@ def inner_evaluate(
                         )
                         generated = torch.cat((generated, pad_tensor), dim=1)
             
-                    # Confirm the length of the sequence matches the oracle length
-                    assert generated.size(1) == length.item(), (
-                        f"Generated sequence length ({generated.size(1)}) does not match "
-                        f"the expected length ({length.item()})."
-                    )
+                    # Debugging: Check the length of the generated sequence
+                    if generated.size(1) != length.item():
+                        print(f"Error: Expected length {length.item()}, but got {generated.size(1)}.")
+                        print(f"Input {i}: {input_ids}")
+                        print(f"Generated: {generated}")
+                        raise ValueError(
+                            f"Generated sequence length ({generated.size(1)}) does not match "
+                            f"expected oracle length ({length.item()})."
+                        )
             
                     outputs.append(generated)
+            
+                # Ensure all sequences are of the same length before concatenating
+                output_lengths = [output.size(1) for output in outputs]
+                if len(set(output_lengths)) != 1:
+                    print(f"Inconsistent lengths detected in outputs: {output_lengths}")
+                    raise RuntimeError("Inconsistent tensor lengths in outputs.")
             
                 # Concatenate outputs to match batch format
                 outputs = torch.cat(outputs, dim=0)
