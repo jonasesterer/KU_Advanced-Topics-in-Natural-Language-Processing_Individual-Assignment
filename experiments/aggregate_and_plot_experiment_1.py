@@ -4,6 +4,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 from glob import glob
 
+plt.rcParams.update({
+    'font.size': 14,       # Default font size
+    'axes.titlesize': 18,  # Title font size
+    'axes.labelsize': 18,  # X and Y label font size
+    'xtick.labelsize': 16, # X-tick label font size
+    'ytick.labelsize': 16, # Y-tick label font size
+    'legend.fontsize': 14  # Legend font size
+})
+
 def load_experiment_1_results() -> dict:
     """
     Load all results files for Experiment 1.
