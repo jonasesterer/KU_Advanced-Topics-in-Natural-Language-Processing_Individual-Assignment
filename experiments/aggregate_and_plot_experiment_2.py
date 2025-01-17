@@ -45,7 +45,7 @@ def load_experiment_2_results() -> dict:
 
     return results
 
-def plot_overlayed_experiment_2(all_results: dict):
+def plot_experiment_2_results(all_results: dict):
     """
     Plots aggregated Experiment 2 results, splitting into:
       - Standard  (Figure 1: 1×2 subplots)
@@ -271,3 +271,7 @@ def plot_overlayed_experiment_2(all_results: dict):
     with open(aggregated_path, "wb") as f:
         pickle.dump(all_results, f)
     print(f"Aggregated results saved as {aggregated_path}")
+
+if __name__ == "__main__":
+    results = load_experiment_2_results()
+    plot_experiment_2_results(results)
