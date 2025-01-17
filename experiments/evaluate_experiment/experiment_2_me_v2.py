@@ -323,7 +323,7 @@ model_type: str, num_steps: int):
         print(f"Plot saved as {plot_path}")
 
     # Plot results for the first model
-    prepare_and_plot(model_1_results, title_suffix="(Standard)")
+    prepare_and_plot(model_1_results, title_suffix="Standard")
 
     # Plot results for the second model with "oracle lengths"
-    prepare_and_plot(model_2_results, title_suffix="(Oracle Lengths)")
+    prepare_and_plot(model_2_results, title_suffix="Oracle Lengths")
