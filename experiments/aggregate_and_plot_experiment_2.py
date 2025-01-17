@@ -221,6 +221,8 @@ def plot_experiment_2_results(all_results: dict):
     axs_std[1].set_xticks(sorted(std_inp_xvals))
     axs_std[1].set_yticks(range(0, 101, 20))
 
+    axs_std[0].legend()
+
     # We do NOT show a legend in the Standard figure
     fig_std.tight_layout()
     fig_std.savefig("Plot_Overlayed_Standard_Experiment2.png")
@@ -260,7 +262,7 @@ def plot_experiment_2_results(all_results: dict):
     axs_oracle[3].set_yticks(range(0, 71, 10))
 
     # Place the legend ONLY in subplot 3
-    axs_oracle[3].legend()
+    axs_oracle[2].legend()
 
     fig_oracle.tight_layout()
     fig_oracle.savefig("Plot_Overlayed_Oracle_Experiment2.png")
