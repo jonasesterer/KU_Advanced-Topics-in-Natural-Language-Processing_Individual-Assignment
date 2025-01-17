@@ -121,7 +121,7 @@ def inner_evaluate(
                     print(f"Index {i} - Final generated shape: {generated.shape}, Max length in batch: {max_length_in_batch}")
             
                     outputs.append(generated)
-                    print(f"Shape outputs: outputs.shape}")
+                    print(f"Shape outputs: {outputs.shape}")
             
                 # Concatenate outputs after ensuring consistency in lengths
                 outputs = torch.cat(outputs, dim=0)
