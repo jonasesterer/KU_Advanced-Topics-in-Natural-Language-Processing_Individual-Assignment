@@ -89,23 +89,24 @@ def inner_evaluate(
     
             if oracle:
                 outputs = []
+                max_length_in_batch = int(fixed_lengths.max().item())  # Find the maximum oracle length in the batch
+            
                 for i, (input_ids, length) in enumerate(zip(encoded_src["input_ids"], fixed_lengths)):
-                    # Generate sequence for each input with forced length enforcement
+                    # Generate sequence for each input with a length based on oracle
                     generated = model.generate(
                         input_ids=input_ids.unsqueeze(0),  # Add batch dimension
-                        max_length=length.item(),  # Enforce maximum length
-                        min_length=length.item(),  # Enforce minimum length
+                        max_length=max_length_in_batch,  # Set maximum length to the longest in the batch
+                        min_length=length.item(),  # Ensure a minimum length specific to this sample
                         early_stopping=False,  # Disable early stopping
                     )
             
-                    # Adjust generated sequence to match oracle length
+                    # Debugging: Log the generated shape before adjustment
+                    print(f"Index {i} - Generated shape before adjustment: {generated.shape}")
+            
+                    # Pad or truncate to the batch's maximum length
                     current_length = generated.size(1)
-                    if current_length > length.item():  # Truncate if too long
-                        print(f"Truncating at index {i}: Expected length {length.item()}, got {current_length}")
-                        generated = generated[:, :length.item()]
-                    elif current_length < length.item():  # Pad if too short
-                        print(f"Padding at index {i}: Expected length {length.item()}, got {current_length}")
-                        pad_size = length.item() - current_length
+                    if current_length < max_length_in_batch:
+                        pad_size = max_length_in_batch - current_length
                         pad_tensor = torch.full(
                             (generated.size(0), pad_size),
                             pad_token_id,
@@ -113,31 +114,19 @@ def inner_evaluate(
                             dtype=generated.dtype,
                         )
                         generated = torch.cat((generated, pad_tensor), dim=1)
+                    elif current_length > max_length_in_batch:
+                        generated = generated[:, :max_length_in_batch]
             
-                    # Validate length after adjustment
-                    final_length = generated.size(1)
-                    if final_length != length.item():
-                        print(f"Error at index {i}: Expected {length.item()}, final length {final_length}")
-                        print(f"Generated sequence: {generated}")
-                        raise ValueError(
-                            f"Generated sequence length ({final_length}) does not match expected oracle length ({length.item()})."
-                        )
+                    # Debugging: Log the final shape after adjustment
+                    print(f"Index {i} - Final generated shape: {generated.shape}, Max length in batch: {max_length_in_batch}")
             
                     outputs.append(generated)
-                    print(f"Index {i} - Final generated shape: {generated.shape}, Expected length: {length.item()}")
+                    print(f"Shape outputs: outputs.shape}")
             
-                # Pad the outputs to ensure consistent lengths within the batch
-                outputs = pad_sequence(outputs, batch_first=True, padding_value=pad_token_id)
-                print(f"Batch {batch_idx} - Padded output shape: {outputs.shape}")
-            
-                # Validate all output lengths after padding
-                output_lengths = [output.size(1) for output in outputs]
-                unique_lengths = set(output_lengths)
-                if len(unique_lengths) > 1:
-                    print(f"Inconsistent lengths detected in Batch {batch_idx}: {unique_lengths}")
-                    raise RuntimeError("Inconsistent tensor lengths in outputs.")
-            
-                print(f"Batch {batch_idx} - Final concatenated output shape: {outputs.shape}")    
+                # Concatenate outputs after ensuring consistency in lengths
+                outputs = torch.cat(outputs, dim=0)
+                print(f"Batch {batch_idx} - Final concatenated output shape: {outputs.shape}")
+   
             else:
                 outputs = model.generate(
                     input_ids=encoded_src["input_ids"],
