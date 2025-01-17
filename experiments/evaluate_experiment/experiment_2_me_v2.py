@@ -121,7 +121,12 @@ def inner_evaluate(
                     print(f"Index {i} - Final generated shape: {generated.shape}, Max length in batch: {max_length_in_batch}")
             
                     outputs.append(generated)
-                    print(f"Shape outputs: {outputs.shape}")
+                    
+                # Debugging: Log the first 10 output shapes
+                print(f"Number of elements in outputs: {len(outputs)}")
+                print(f"Shapes of the first 10 outputs before concatenation:")
+                for j, output in enumerate(outputs[:10]):  # Print only the first 10 elements
+                    print(f"  Output {j}: {output.shape}")
             
                 # Concatenate outputs after ensuring consistency in lengths
                 outputs = torch.cat(outputs, dim=0)
