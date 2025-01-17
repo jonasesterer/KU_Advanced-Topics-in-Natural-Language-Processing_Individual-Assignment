@@ -101,7 +101,7 @@ def inner_evaluate(
                     )
             
                     # Debugging: Log the generated shape before adjustment
-                    print(f"Index {i} - Generated shape before adjustment: {generated.shape}")
+                    #print(f"Index {i} - Generated shape before adjustment: {generated.shape}")
             
                     # Pad or truncate to the batch's maximum length
                     current_length = generated.size(1)
@@ -118,7 +118,7 @@ def inner_evaluate(
                         generated = generated[:, :max_length_in_batch]
             
                     # Debugging: Log the final shape after adjustment
-                    print(f"Index {i} - Final generated shape: {generated.shape}, Max length in batch: {max_length_in_batch}")
+                    #print(f"Index {i} - Final generated shape: {generated.shape}, Max length in batch: {max_length_in_batch}")
             
                     outputs.append(generated)
                     
