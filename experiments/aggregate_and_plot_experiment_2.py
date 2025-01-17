@@ -251,7 +251,7 @@ def plot_experiment_2_results(all_results: dict):
     axs_oracle[2].set_ylabel("Sequence-Level Accuracy (%)")
     axs_oracle[2].grid(axis="y", linestyle="--", alpha=0.7)
     axs_oracle[2].set_xticks(sorted(oracle_tgt_seq_xvals))
-    axs_oracle[2].set_yticks(range(0, 71, 10))
+    axs_oracle[2].set_yticks(range(0, 101, 20))
 
     # Subplot 3: Sequence-Level vs. Input Length
     axs_oracle[3].set_title("Oracle")
@@ -259,7 +259,7 @@ def plot_experiment_2_results(all_results: dict):
     axs_oracle[3].set_ylabel("Sequence-Level Accuracy (%)")
     axs_oracle[3].grid(axis="y", linestyle="--", alpha=0.7)
     axs_oracle[3].set_xticks(sorted(oracle_inp_seq_xvals))
-    axs_oracle[3].set_yticks(range(0, 71, 10))
+    axs_oracle[3].set_yticks(range(0, 101, 20))
 
     # Place the legend ONLY in subplot 3
     axs_oracle[2].legend()
